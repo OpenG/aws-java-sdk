@@ -13,3 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.amazonaws:aws-java-sdk-s3:1.10.5.1'
+    testCompile 'org.assertj:assertj-core:3.1.0',
+            'junit:junit:4.12'
+}

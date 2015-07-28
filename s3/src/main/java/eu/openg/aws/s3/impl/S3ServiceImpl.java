@@ -13,3 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package eu.openg.aws.s3.impl;
+
+import eu.openg.aws.s3.S3Service;
+
+public class S3ServiceImpl implements S3Service {
+
+    @Override
+    public String getBucket(String bucketName) {
+        return bucketName;
+    }
+}

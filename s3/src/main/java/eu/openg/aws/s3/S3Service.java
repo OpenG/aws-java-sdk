@@ -13,3 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package eu.openg.aws.s3;
+
+public interface S3Service {
+
+    String getBucket(String bucketName);
+}

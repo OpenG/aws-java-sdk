@@ -1,6 +1,6 @@
 # AWS SDK for Java 8
 
-Amazon Web Services (AWS) Software Development Kit (SDK) for Java 8.
+AWS (Amazon Web Services) SDK (Software Development Kit) for Java 8.
 
 # License
 

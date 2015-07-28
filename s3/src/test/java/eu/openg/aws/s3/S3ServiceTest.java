@@ -13,3 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package eu.openg.aws.s3;
+
+import eu.openg.aws.s3.impl.S3ServiceImpl;
+import org.junit.Test;
+
+import static org.assertj.core.api.StrictAssertions.assertThat;
+
+public class S3ServiceTest {
+
+    @Test
+    public void retrieveABucket() {
+        S3Service service = new S3ServiceImpl();
+        assertThat(service.getBucket("test")).isEqualTo("test");
+    }
+}
