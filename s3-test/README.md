@@ -4,7 +4,7 @@ A set of classes to help writing tests when developing using Amazon S3.
 
 # Classes
 
-## AmazonS3Fake (eu.openg.aws.s3.internal.AmazonS3Fake)
+## AmazonS3Fake
 
 A class that implements amazons provided AmazonS3 interface. It is basically a simplified in-memory implementation of
 the S3 storage that can be used when writing unit tests.
