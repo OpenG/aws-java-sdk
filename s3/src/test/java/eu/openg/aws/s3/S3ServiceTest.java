@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-subprojects {
-    apply plugin: 'java'
+package eu.openg.aws.s3;
 
-    repositories {
-        mavenCentral()
-    }
+import eu.openg.aws.s3.impl.S3ServiceImpl;
+import org.junit.Test;
 
-    dependencies {
-        compile 'com.amazonaws:aws-java-sdk-s3:1.10.5.1'
-        testCompile 'junit:junit:4.12',
-                'org.assertj:assertj-core:3.1.0'
+import static org.assertj.core.api.StrictAssertions.assertThat;
+
+public class S3ServiceTest {
+
+    @Test
+    public void retrieveABucket() {
+        S3Service service = new S3ServiceImpl();
+        assertThat(service.getBucket("test")).isEqualTo("test");
     }
 }

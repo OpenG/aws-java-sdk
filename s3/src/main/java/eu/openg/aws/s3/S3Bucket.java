@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-subprojects {
-    apply plugin: 'java'
+package eu.openg.aws.s3;
 
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        compile 'com.amazonaws:aws-java-sdk-s3:1.10.5.1'
-        testCompile 'junit:junit:4.12',
-                'org.assertj:assertj-core:3.1.0'
-    }
+public interface S3Bucket {
 }
