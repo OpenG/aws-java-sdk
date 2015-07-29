@@ -15,3 +15,4 @@
  */
 
 include 's3'
+include 's3-test'
