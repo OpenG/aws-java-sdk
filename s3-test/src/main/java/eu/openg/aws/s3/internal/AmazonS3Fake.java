@@ -28,11 +28,10 @@ import java.time.Clock;
 import java.util.*;
 
 import static com.amazonaws.util.BinaryUtils.toBase64;
-import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 public class AmazonS3Fake extends AbstractAmazonS3 {
 
-    private static final Owner owner = new Owner(md5Hex(getRandomString()) + md5Hex(getRandomString()), "test");
+    private static final Owner owner = new Owner(createExtendedId(), "test");
 
     private final Clock clock;
 
@@ -59,7 +58,14 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
     @Override
     public Bucket createBucket(String bucketName) {
         if (doesBucketExist(bucketName))
-            throw buildException(bucketName);
+            throw buildException(
+                    "The requested bucket name is not available. " +
+                            "The bucket namespace is shared by all users of the system. " +
+                            "Please select a different name and try again.",
+                    "BucketAlreadyExists", 409,
+                    new HashMap<String, String>() {{
+                        put("BucketName", bucketName);
+                    }});
         addBucket(bucketName);
         return new Bucket(bucketName);
     }
@@ -71,33 +77,53 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         buckets.put(bucketName, bucket);
     }
 
-    private static AmazonS3Exception buildException(String bucketName) {
-        AmazonS3Exception exception = buildException(
-                bucketName, toBase64(new BigInteger(384, new SecureRandom()).toByteArray()));
+    @Override
+    public void deleteBucket(String bucketName) {
+        if (bucketName.startsWith("existing"))
+            throw buildException("All access to this object has been disabled", "AllAccessDisabled", 403);
+        if (!doesBucketExist(bucketName))
+            throw buildException(
+                    "The specified bucket does not exist",
+                    "NoSuchBucket", 404,
+                    new HashMap<String, String>() {{
+                        put("BucketName", bucketName);
+                    }});
+        buckets.remove(bucketName);
+    }
+
+    private static AmazonS3Exception buildException(String message, String errorCode, int statusCode) {
+        return buildException(message, errorCode, statusCode, null);
+    }
+
+    private static AmazonS3Exception buildException(
+            String message, String errorCode, int statusCode, Map<String, String> additionalDetails
+    ) {
+        AmazonS3Exception exception = newException(message, errorCode, statusCode, additionalDetails);
         exception.setServiceName("Amazon S3");
         return exception;
     }
 
-    private static AmazonS3Exception buildException(String bucketName, String extendedRequestId) {
+    private static AmazonS3Exception newException(
+            String message, String errorCode, int statusCode, Map<String, String> additionalDetails
+    ) {
         AmazonS3ExceptionBuilder builder = new AmazonS3ExceptionBuilder();
-
-        builder.setErrorMessage("The requested bucket name is not available. " +
-                "The bucket namespace is shared by all users of the system. " +
-                "Please select a different name and try again.");
+        builder.setRequestId(createId());
+        builder.setErrorCode(errorCode);
+        builder.setErrorMessage(message);
+        builder.setStatusCode(statusCode);
+        builder.setExtendedRequestId(toBase64(createExtendedId().getBytes()));
+        builder.setAdditionalDetails(additionalDetails);
+        builder.addAdditionalDetail("Error", builder.getExtendedRequestId());
         builder.setErrorResponseXml("");
-
-        builder.setStatusCode(409);
-        builder.setExtendedRequestId(extendedRequestId);
-        builder.setRequestId(getRandomString());
-        builder.setErrorCode("BucketAlreadyExists");
-
-        builder.addAdditionalDetail("BucketName", bucketName);
-        builder.addAdditionalDetail("Error", extendedRequestId);
 
         return builder.build();
     }
 
-    private static String getRandomString() {
+    private static String createId() {
         return new BigInteger(80, new SecureRandom()).toString(32);
+    }
+
+    private static String createExtendedId() {
+        return new BigInteger(320, new SecureRandom()).toString(32);
     }
 }

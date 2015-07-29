@@ -35,23 +35,13 @@ public class S3ThrowableAssert extends AbstractThrowableAssert<S3ThrowableAssert
                 .actual);
     }
 
-    public S3ThrowableAssert containAdditionalDetail(String key, String value) {
-        Assertions.assertThat(actual.getAdditionalDetails()).as(key).containsEntry(key, value);
-        return myself;
-    }
-
-    public S3ThrowableAssert containAdditionalDetailWithKey(String key) {
-        Assertions.assertThat(actual.getAdditionalDetails()).containsKey(key);
+    public S3ThrowableAssert hasRequestId() {
+        Assertions.assertThat(actual.getRequestId()).isNotEmpty();
         return myself;
     }
 
     public S3ThrowableAssert hasErrorCode(String errorCode) {
         Assertions.assertThat(actual.getErrorCode()).isEqualTo(errorCode);
-        return myself;
-    }
-
-    public S3ThrowableAssert hasErrorType(ErrorType errorType) {
-        Assertions.assertThat(actual.getErrorType()).isEqualTo(errorType);
         return myself;
     }
 
@@ -65,8 +55,28 @@ public class S3ThrowableAssert extends AbstractThrowableAssert<S3ThrowableAssert
         return myself;
     }
 
+    public S3ThrowableAssert hasExtendedRequestId() {
+        Assertions.assertThat(actual.getExtendedRequestId()).isNotEmpty();
+        return myself;
+    }
+
+    public S3ThrowableAssert hasErrorType(ErrorType errorType) {
+        Assertions.assertThat(actual.getErrorType()).isEqualTo(errorType);
+        return myself;
+    }
+
     public S3ThrowableAssert hasServiceName(String serviceName) {
         Assertions.assertThat(actual.getServiceName()).isEqualTo(serviceName);
+        return myself;
+    }
+
+    public S3ThrowableAssert containAdditionalDetail(String key, String value) {
+        Assertions.assertThat(actual.getAdditionalDetails()).as(key).containsEntry(key, value);
+        return myself;
+    }
+
+    public S3ThrowableAssert containAdditionalDetailWithKey(String key) {
+        Assertions.assertThat(actual.getAdditionalDetails()).containsKey(key);
         return myself;
     }
 }

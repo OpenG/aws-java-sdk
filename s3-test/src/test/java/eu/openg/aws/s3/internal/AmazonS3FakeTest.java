@@ -66,21 +66,22 @@ public class AmazonS3FakeTest {
     @Test
     public void createABucketThatAlreadyExists() {
         assertThatThrownBy(() -> s3.createBucket("existing_bucket"))
+                .hasRequestId()
+                .hasErrorCode("BucketAlreadyExists")
                 .hasErrorMessage(
                         "The requested bucket name is not available. " +
                                 "The bucket namespace is shared by all users of the system. " +
                                 "Please select a different name and try again.")
+                .hasStatusCode(409)
+                .hasExtendedRequestId()
                 .containAdditionalDetail("BucketName", "existing_bucket")
                 .containAdditionalDetailWithKey("Error")
-                .hasErrorCode("BucketAlreadyExists")
-                .hasStatusCode(409)
                 .hasServiceName("Amazon S3")
-                .hasErrorType(Client)
-                .matches(e -> e.getRequestId() != null && e.getExtendedRequestId() != null);
+                .hasErrorType(Client);
     }
 
     @Test
-    public void createANewBucket() {
+    public void createNewBucket() {
         assertThat(s3.createBucket("new_bucket")).isEqualToComparingFieldByField(new Bucket("new_bucket"));
         assertThat(s3.doesBucketExist("new_bucket")).isTrue();
     }
@@ -115,5 +116,41 @@ public class AmazonS3FakeTest {
 
     private Bucket getBucketWithName(String name, List<Bucket> buckets) {
         return buckets.stream().filter(b -> Objects.equals(b.getName(), name)).findFirst().get();
+    }
+
+    @Test
+    public void deleteMissingBucket() {
+        assertThatThrownBy(() -> s3.deleteBucket("missing_bucket"))
+                .hasRequestId()
+                .hasErrorCode("NoSuchBucket")
+                .hasErrorMessage("The specified bucket does not exist")
+                .hasStatusCode(404)
+                .hasExtendedRequestId()
+                .containAdditionalDetail("BucketName", "missing_bucket")
+                .containAdditionalDetailWithKey("Error")
+                .hasServiceName("Amazon S3")
+                .hasErrorType(Client);
+    }
+
+    @Test
+    public void deleteOtherOwnersBucket() {
+        assertThatThrownBy(() -> s3.deleteBucket("existing_bucket"))
+                .hasRequestId()
+                .hasErrorCode("AllAccessDisabled")
+                .hasErrorMessage("All access to this object has been disabled")
+                .hasStatusCode(403)
+                .hasExtendedRequestId()
+                .containAdditionalDetailWithKey("Error")
+                .hasServiceName("Amazon S3")
+                .hasErrorType(Client);
+    }
+
+    @Test
+    public void deleteABucket() {
+        String bucketName = "new_bucket";
+        s3.createBucket(bucketName);
+        assertThat(s3.doesBucketExist("new_bucket")).isTrue();
+        s3.deleteBucket("new_bucket");
+        assertThat(s3.doesBucketExist("new_bucket")).isFalse();
     }
 }
