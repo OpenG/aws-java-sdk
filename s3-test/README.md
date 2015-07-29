@@ -91,4 +91,4 @@ public class AmazonExceptionTest {
 
 # License
 
-Gradle Swift Plugin is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+Amazon S3 Test Utils is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).

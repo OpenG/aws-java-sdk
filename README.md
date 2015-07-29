@@ -9,4 +9,4 @@ squashed with the least possible delay.
 
 # License
 
-Gradle Swift Plugin is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+AWS SDK for Java 8 is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
