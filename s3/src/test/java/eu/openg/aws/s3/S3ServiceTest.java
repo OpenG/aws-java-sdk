@@ -16,16 +16,27 @@
 
 package eu.openg.aws.s3;
 
-import eu.openg.aws.s3.impl.S3ServiceImpl;
+import eu.openg.aws.s3.internal.AmazonS3Fake;
 import org.junit.Test;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class S3ServiceTest {
 
+    private S3Service service = new S3Service(new AmazonS3Fake());
+
     @Test
-    public void retrieveABucket() {
-        S3Service service = new S3ServiceImpl();
-        assertThat(service.getBucket("test")).isEqualTo("test");
+    public void createService() {
+        assertThat(new S3Service()).isNotNull();
+    }
+
+    @Test
+    public void checkForMissingBucket() {
+        assertThat(service.doesBucketExist("missing_bucket")).isFalse();
+    }
+
+    @Test
+    public void checkForExistingBucket() {
+        assertThat(service.doesBucketExist("existing_bucket")).isTrue();
     }
 }

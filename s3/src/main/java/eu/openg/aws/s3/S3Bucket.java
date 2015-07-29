@@ -16,5 +16,11 @@
 
 package eu.openg.aws.s3;
 
-public interface S3Bucket {
+import com.amazonaws.services.s3.model.S3Object;
+
+public class S3Bucket {
+
+    S3Object getObject(String key) {
+        return null;
+    }
 }
