@@ -64,9 +64,12 @@ public class TestServiceTest {
 }
 ```
 
-### Note
+### Notice
 
 Buckets prefixed with keyword `existing` (i.e., `existing_bucket`) are considered already created.
+ 
+Keep in mind that this is a 3rd party library and so it may work slightly different than the actual service does. Though
+it should be close enough for basic unit testing.
 
 ## S3ThrowableAssert
 
@@ -85,11 +88,6 @@ public class AmazonExceptionTest {
     }
 }
 ```
-
-# Notice
-
-Since this is pretty much a 3rd party library, there is no way to guarantee that it will work identically to how the
-actual service does. Though it should be close enough for basic unit testing.
 
 # License
 
