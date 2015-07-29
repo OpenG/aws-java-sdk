@@ -9,14 +9,6 @@ A set of classes to help writing tests when developing using Amazon S3.
 A class that implements amazons provided AmazonS3 interface. It is basically a simplified in-memory implementation of
 the S3 storage that can be used when writing unit tests.
 
-### Advantages of using a fake instead of the actual service
-
-* Speed up your tests (no network latency due to in-memory implementation)
-* Make your tests more repeatable (no cleanup is needed after tests since all the data is discarded together with the
-  fake itself meaning your tests will run on exactly the same environment every time)
-* Increase your security (fakes do not need to connect to Amazon S3 in order to run meaning you do not need to supply
-  your CI server with AWS credentials in order to run your tests)
-
 ### Usage
 
 ```java
@@ -63,6 +55,14 @@ public class TestServiceTest {
     }
 }
 ```
+
+### Advantages of using a fake instead of the actual service
+
+* Speed up your tests (no network latency due to in-memory implementation)
+* Make your tests more repeatable (no cleanup is needed after tests since all the data is discarded together with the
+  fake itself meaning your tests will run on exactly the same environment every time)
+* Increase your security (fakes do not need to connect to Amazon S3 in order to run meaning you do not need to supply
+  your CI server with AWS credentials in order to run your tests)
 
 ### Notice
 
