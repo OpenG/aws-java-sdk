@@ -16,18 +16,24 @@
 
 package eu.openg.aws.s3.internal;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AbstractAmazonS3;
 import com.amazonaws.services.s3.internal.AmazonS3ExceptionBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.Owner;
+import com.amazonaws.services.s3.model.PutObjectResult;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.*;
 
 import static com.amazonaws.util.BinaryUtils.toBase64;
+import static com.amazonaws.util.Md5Utils.md5AsBase64;
+import static org.apache.commons.codec.binary.Hex.encodeHexString;
 
 public class AmazonS3Fake extends AbstractAmazonS3 {
 
@@ -89,6 +95,18 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
                         put("BucketName", bucketName);
                     }});
         buckets.remove(bucketName);
+    }
+
+    @Override
+    public PutObjectResult putObject(String bucketName, String key, File file) {
+        try {
+            PutObjectResult result = new PutObjectResult();
+            result.setETag(encodeHexString(createId().getBytes()));
+            result.setContentMd5(md5AsBase64(file));
+            return result;
+        } catch (IOException e) {
+            throw new AmazonClientException(e);
+        }
     }
 
     private static AmazonS3Exception buildException(String message, String errorCode, int statusCode) {

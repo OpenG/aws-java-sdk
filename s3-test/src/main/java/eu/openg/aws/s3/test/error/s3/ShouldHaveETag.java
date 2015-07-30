@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.internal;
+package eu.openg.aws.s3.test.error.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import org.junit.Before;
+import org.assertj.core.error.BasicErrorMessageFactory;
+import org.assertj.core.error.ErrorMessageFactory;
 
-import java.time.Clock;
-import java.time.Instant;
+public class ShouldHaveETag extends BasicErrorMessageFactory {
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+    private static final ShouldHaveETag INSTANCE = new ShouldHaveETag();
 
-public abstract class AmazonS3FakeTest {
+    public static ErrorMessageFactory shouldHaveETag() {
+        return INSTANCE;
+    }
 
-    protected Clock clock;
-    protected AmazonS3 s3;
-
-    @Before
-    public void prepareFakeService() {
-        clock = mock(Clock.class);
-        when(clock.instant()).thenReturn(Instant.now());
-        s3 = new AmazonS3Fake(clock);
+    private ShouldHaveETag() {
+        super("%nExpecting ETag not to be null");
     }
 }

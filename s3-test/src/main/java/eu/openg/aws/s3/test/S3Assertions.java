@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.internal;
+package eu.openg.aws.s3.test;
 
-import com.amazonaws.services.s3.AmazonS3;
-import org.junit.Before;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import org.assertj.core.api.Assertions;
 
-import java.time.Clock;
-import java.time.Instant;
+public class S3Assertions extends Assertions {
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-public abstract class AmazonS3FakeTest {
-
-    protected Clock clock;
-    protected AmazonS3 s3;
-
-    @Before
-    public void prepareFakeService() {
-        clock = mock(Clock.class);
-        when(clock.instant()).thenReturn(Instant.now());
-        s3 = new AmazonS3Fake(clock);
+    public static PutObjectResultAssert assertThat(PutObjectResult actual) {
+        return new PutObjectResultAssert(actual);
     }
 }
