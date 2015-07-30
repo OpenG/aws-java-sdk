@@ -20,6 +20,8 @@ dependencies {
 
 publishing.publications {
     mavenJava(MavenPublication) {
+        artifactId = 's3-sdk'
+
         from components.java
     }
 }
