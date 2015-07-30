@@ -9,7 +9,7 @@ A set of classes to help in writing tests when developing using Amazon S3.
 A class that implements amazons provided AmazonS3 interface. It is basically a simplified in-memory implementation of
 the S3 storage that can be used when writing unit tests.
 
-### Usage
+### Example
 
 ```java
 public class TestService {
@@ -75,7 +75,7 @@ it should be close enough for basic unit testing.
 
 A basic assert helper based on [AssertJ](http://assertj.org) for testing out Amazon exceptions.
 
-### Usage
+### Example
 
 ```java
 public class AmazonExceptionTest {
