@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
+package eu.openg.aws.s3;
 
-    group = 'eu.openg.aws'
-    version = '0.1'
+import com.amazonaws.services.s3.model.S3Object;
 
-    repositories {
-        mavenCentral()
-    }
+public class S3Bucket {
 
-    dependencies {
-        compile 'com.amazonaws:aws-java-sdk-s3:1.10.5.1'
-        testCompile 'junit:junit:4.12',
-                'org.assertj:assertj-core:3.1.0',
-                'org.mockito:mockito-core:1.10.19'
+    S3Object getObject(String key) {
+        return null;
     }
 }
