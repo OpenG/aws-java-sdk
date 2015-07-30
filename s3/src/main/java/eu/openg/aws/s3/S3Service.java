@@ -16,7 +16,37 @@
 
 package eu.openg.aws.s3;
 
-public interface S3Service {
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.Bucket;
 
-    String getBucket(String bucketName);
+import java.util.List;
+
+public class S3Service {
+
+    private final AmazonS3 s3;
+
+    public S3Service(AmazonS3 s3) {
+        this.s3 = s3;
+    }
+
+    public S3Service() {
+        this(new AmazonS3Client());
+    }
+
+    public boolean doesBucketExist(String bucketName) {
+        return s3.doesBucketExist(bucketName);
+    }
+
+    public List<Bucket> listBuckets() {
+        return s3.listBuckets();
+    }
+
+    public Bucket createBucket(String bucketName) {
+        return s3.createBucket(bucketName);
+    }
+
+    public void deleteBucket(String bucketName) {
+        s3.deleteBucket(bucketName);
+    }
 }

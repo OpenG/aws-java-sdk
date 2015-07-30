@@ -16,16 +16,51 @@
 
 package eu.openg.aws.s3;
 
-import eu.openg.aws.s3.impl.S3ServiceImpl;
+import com.amazonaws.services.s3.AmazonS3;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class S3ServiceTest {
 
+    private S3Service service;
+    private AmazonS3 s3;
+
+    @Before
+    public void setUp() {
+        s3 = mock(AmazonS3.class);
+        service = new S3Service(s3);
+    }
+
     @Test
-    public void retrieveABucket() {
-        S3Service service = new S3ServiceImpl();
-        assertThat(service.getBucket("test")).isEqualTo("test");
+    public void createService() {
+        assertThat(new S3Service()).isNotNull();
+    }
+
+    @Test
+    public void doesBucketExist() {
+        service.doesBucketExist("bucket_name");
+        verify(s3).doesBucketExist("bucket_name");
+    }
+
+    @Test
+    public void listBuckets() {
+        service.listBuckets();
+        verify(s3).listBuckets();
+    }
+
+    @Test
+    public void createBucket() {
+        service.createBucket("new_bucket");
+        verify(s3).createBucket("new_bucket");
+    }
+
+    @Test
+    public void deleteBucket() {
+        service.deleteBucket("bucket_name");
+        verify(s3).deleteBucket("bucket_name");
     }
 }
