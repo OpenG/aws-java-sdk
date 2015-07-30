@@ -16,14 +16,24 @@
 
 package eu.openg.aws.s3;
 
-import eu.openg.aws.s3.internal.AmazonS3Fake;
+import com.amazonaws.services.s3.AmazonS3;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class S3ServiceTest {
 
-    private S3Service service = new S3Service(new AmazonS3Fake());
+    private S3Service service;
+    private AmazonS3 s3;
+
+    @Before
+    public void setUp() {
+        s3 = mock(AmazonS3.class);
+        service = new S3Service(s3);
+    }
 
     @Test
     public void createService() {
@@ -31,12 +41,26 @@ public class S3ServiceTest {
     }
 
     @Test
-    public void checkForMissingBucket() {
-        assertThat(service.doesBucketExist("missing_bucket")).isFalse();
+    public void doesBucketExist() {
+        service.doesBucketExist("bucket_name");
+        verify(s3).doesBucketExist("bucket_name");
     }
 
     @Test
-    public void checkForExistingBucket() {
-        assertThat(service.doesBucketExist("existing_bucket")).isTrue();
+    public void listBuckets() {
+        service.listBuckets();
+        verify(s3).listBuckets();
+    }
+
+    @Test
+    public void createBucket() {
+        service.createBucket("new_bucket");
+        verify(s3).createBucket("new_bucket");
+    }
+
+    @Test
+    public void deleteBucket() {
+        service.deleteBucket("bucket_name");
+        verify(s3).deleteBucket("bucket_name");
     }
 }

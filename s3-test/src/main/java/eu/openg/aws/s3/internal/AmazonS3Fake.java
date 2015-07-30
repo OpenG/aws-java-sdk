@@ -114,7 +114,7 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         builder.setExtendedRequestId(toBase64(createExtendedId().getBytes()));
         builder.setAdditionalDetails(additionalDetails);
         builder.addAdditionalDetail("Error", builder.getExtendedRequestId());
-        builder.setErrorResponseXml("");
+        builder.setErrorResponseXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
         return builder.build();
     }
