@@ -11,7 +11,7 @@ Provides an interface for accessing the Amazon S3 web service.
 ### Methods
 
 Name            | Parameters         | Type         | Description
-----------------+--------------------+--------------+------------------------------------------------------------------------------------------
+----------------|--------------------|--------------|------------------------------------------------------------------------------------------
 doesBucketExist | bucketName: String | boolean      | Checks if the specified bucket exists
 listBuckets     |                    | List<Bucket> | Returns a list of all Amazon S3 buckets that the authenticated sender of the request owns
 createBucket    | bucketName: String | Bucket       | Creates a new Amazon S3 bucket with the specified name in the default (US) region
