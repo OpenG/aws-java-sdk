@@ -17,3 +17,9 @@
 dependencies {
     testCompile project(':s3-test')
 }
+
+publishing.publications {
+    mavenJava(MavenPublication) {
+        from components.java
+    }
+}

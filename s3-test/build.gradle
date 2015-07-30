@@ -17,3 +17,9 @@
 dependencies {
     compile 'org.assertj:assertj-core:3.1.0'
 }
+
+publishing.publications {
+    mavenJava(MavenPublication) {
+        from components.java
+    }
+}
