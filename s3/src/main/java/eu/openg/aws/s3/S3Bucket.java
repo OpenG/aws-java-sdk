@@ -16,11 +16,23 @@
 
 package eu.openg.aws.s3;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+
+import java.io.File;
 
 public class S3Bucket {
 
+    private final AmazonS3 s3;
+    private final String bucketName;
+
+    public S3Bucket(AmazonS3 s3, String bucketName) {
+        this.s3 = s3;
+        this.bucketName = bucketName;
+    }
+
     S3Object getObject(String key) {
-        return null;
+        return s3.getObject(bucketName, key);
     }
 }

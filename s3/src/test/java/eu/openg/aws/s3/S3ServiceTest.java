@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verify;
 
 public class S3ServiceTest {
 
-    private S3Service service;
     private AmazonS3 s3;
+    private S3Service service;
 
     @Before
     public void setUp() {

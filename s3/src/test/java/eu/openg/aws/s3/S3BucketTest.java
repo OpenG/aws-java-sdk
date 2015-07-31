@@ -1,0 +1,49 @@
+/*
+ * Copyright 2015 OpenG (Atvira Karta, LLC)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package eu.openg.aws.s3;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
+public class S3BucketTest {
+
+    private static final String BUCKET_NAME = "bucket_name";
+
+    private AmazonS3 s3;
+    private S3Bucket bucket;
+
+    @Before
+    public void setUp() {
+        s3 = mock(AmazonS3.class);
+        bucket = new S3Bucket(s3, BUCKET_NAME);
+    }
+
+    @Test
+    public void getObject() {
+        S3Object result = mock(S3Object.class);
+        when(s3.getObject(anyString(), anyString())).thenReturn(result);
+
+        assertThat(bucket.getObject("object_key")).isEqualTo(result);
+        verify(s3).getObject(BUCKET_NAME, "object_key");
+    }
+}
