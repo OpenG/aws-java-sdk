@@ -98,6 +98,27 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
                 .hasSameContentAs(file.toURI().toURL().openStream());
     }
 
+    @Test
+    public void deleteObjectFromOtherOwnersBucket() {
+        assertThatAllAccessIsDisabled(() -> s3.deleteObject("existing_bucket", OBJECT_NAME));
+    }
+
+    @Test
+    public void deleteMissingObjectFromABucket() {
+        assertThatThrownBy(() -> s3.getObject(BUCKET_NAME, OBJECT_NAME));
+        s3.deleteObject(BUCKET_NAME, OBJECT_NAME);
+    }
+
+    @Test
+    public void deleteObjectFromABucket() {
+        s3.putObject(BUCKET_NAME, OBJECT_NAME, getResourceAsFile("fixtures/testFile.txt"));
+        assertThat(s3.getObject(BUCKET_NAME, OBJECT_NAME)).isNotNull();
+
+        s3.deleteObject(BUCKET_NAME, OBJECT_NAME);
+
+        assertThatThrownBy(() -> s3.getObject(BUCKET_NAME, OBJECT_NAME));
+    }
+
     private File getResourceAsFile(String name) {
         try {
             return new File(getResource(name).toURI());

@@ -129,6 +129,13 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         metadata.setContentType("text/plain");
     }
 
+    @Override
+    public void deleteObject(String bucketName, String key) {
+        checkBucketAccess(bucketName);
+        if (objects.containsKey(key))
+            objects.remove(key);
+    }
+
     private void checkBucketAccess(String bucketName) {
         if (!doesBucketExist(bucketName))
             throw buildException(
