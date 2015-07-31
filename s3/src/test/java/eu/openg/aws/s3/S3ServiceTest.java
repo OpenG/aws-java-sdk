@@ -17,14 +17,17 @@
 package eu.openg.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.Bucket;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class S3ServiceTest {
+
+    private static final String BUCKET_NAME = "bucket_name";
 
     private AmazonS3 s3;
     private S3Service service;
@@ -42,8 +45,8 @@ public class S3ServiceTest {
 
     @Test
     public void doesBucketExist() {
-        service.doesBucketExist("bucket_name");
-        verify(s3).doesBucketExist("bucket_name");
+        service.doesBucketExist(BUCKET_NAME);
+        verify(s3).doesBucketExist(BUCKET_NAME);
     }
 
     @Test
@@ -53,14 +56,27 @@ public class S3ServiceTest {
     }
 
     @Test
+    public void getMissingBucket() {
+        assertThat(service.getBucket(BUCKET_NAME)).isEmpty();
+        verify(s3).listBuckets();
+    }
+
+    @Test
+    public void getExistingBucket() {
+        when(s3.listBuckets()).thenReturn(singletonList(new Bucket(BUCKET_NAME)));
+        assertThat(service.getBucket(BUCKET_NAME)).isPresent();
+        verify(s3).listBuckets();
+    }
+
+    @Test
     public void createBucket() {
-        service.createBucket("new_bucket");
-        verify(s3).createBucket("new_bucket");
+        service.createBucket(BUCKET_NAME);
+        verify(s3).createBucket(BUCKET_NAME);
     }
 
     @Test
     public void deleteBucket() {
-        service.deleteBucket("bucket_name");
-        verify(s3).deleteBucket("bucket_name");
+        service.deleteBucket(BUCKET_NAME);
+        verify(s3).deleteBucket(BUCKET_NAME);
     }
 }
