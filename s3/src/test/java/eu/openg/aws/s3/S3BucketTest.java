@@ -33,6 +33,7 @@ import static org.mockito.Mockito.*;
 public class S3BucketTest {
 
     private static final String BUCKET_NAME = "bucket_name";
+    private static final String OBJECT_KEY = "object_key";
 
     private AmazonS3 s3;
     private S3Bucket bucket;
@@ -48,8 +49,8 @@ public class S3BucketTest {
         S3Object result = mock(S3Object.class);
         when(s3.getObject(anyString(), anyString())).thenReturn(result);
 
-        assertThat(bucket.getObject("object_key")).isEqualTo(result);
-        verify(s3).getObject(BUCKET_NAME, "object_key");
+        assertThat(bucket.getObject(OBJECT_KEY)).isEqualTo(result);
+        verify(s3).getObject(BUCKET_NAME, OBJECT_KEY);
     }
 
     @Test
@@ -58,8 +59,14 @@ public class S3BucketTest {
         File file = getResourceAsFile("fixtures/testFile.txt");
         when(s3.putObject(anyString(), anyString(), any())).thenReturn(result);
 
-        assertThat(bucket.putObject("object_key", getResourceAsFile("fixtures/testFile.txt"))).isEqualTo(result);
-        verify(s3).putObject(BUCKET_NAME, "object_key", file);
+        assertThat(bucket.putObject(OBJECT_KEY, getResourceAsFile("fixtures/testFile.txt"))).isEqualTo(result);
+        verify(s3).putObject(BUCKET_NAME, OBJECT_KEY, file);
+    }
+
+    @Test
+    public void deleteObject() {
+        bucket.deleteObject(OBJECT_KEY);
+        verify(s3).deleteObject(BUCKET_NAME, OBJECT_KEY);
     }
 
     private File getResourceAsFile(String name) {

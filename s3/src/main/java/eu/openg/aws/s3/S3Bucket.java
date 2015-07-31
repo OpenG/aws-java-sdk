@@ -39,4 +39,8 @@ public class S3Bucket {
     public PutObjectResult putObject(String key, File file) {
         return s3.putObject(bucketName, key, file);
     }
+
+    public void deleteObject(String key) {
+        s3.deleteObject(bucketName, key);
+    }
 }
