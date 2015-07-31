@@ -17,15 +17,20 @@
 package eu.openg.aws.s3.internal;
 
 import com.amazonaws.services.s3.AmazonS3;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.Before;
 
 import java.time.Clock;
 import java.time.Instant;
 
+import static com.amazonaws.AmazonServiceException.ErrorType.Client;
+import static org.assertj.core.api.S3ThrowableAssert.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public abstract class AmazonS3FakeTest {
+
+    protected static final String BUCKET_NAME = "new_bucket";
 
     protected Clock clock;
     protected AmazonS3 s3;
@@ -35,5 +40,30 @@ public abstract class AmazonS3FakeTest {
         clock = mock(Clock.class);
         when(clock.instant()).thenReturn(Instant.now());
         s3 = new AmazonS3Fake(clock);
+    }
+
+    protected void assertThatNoSuchBucketExists(ThrowingCallable shouldRaiseThrowable) {
+        assertThatThrownBy(shouldRaiseThrowable)
+                .hasRequestId()
+                .hasErrorCode("NoSuchBucket")
+                .hasErrorMessage("The specified bucket does not exist")
+                .hasStatusCode(404)
+                .hasExtendedRequestId()
+                .containAdditionalDetail("BucketName", "missing_bucket")
+                .containAdditionalDetailWithKey("Error")
+                .hasServiceName("Amazon S3")
+                .hasErrorType(Client);
+    }
+
+    protected void assertThatAllAccessIsDisabled(ThrowingCallable shouldRaiseThrowable) {
+        assertThatThrownBy(shouldRaiseThrowable)
+                .hasRequestId()
+                .hasErrorCode("AllAccessDisabled")
+                .hasErrorMessage("All access to this object has been disabled")
+                .hasStatusCode(403)
+                .hasExtendedRequestId()
+                .containAdditionalDetailWithKey("Error")
+                .hasServiceName("Amazon S3")
+                .hasErrorType(Client);
     }
 }

@@ -27,16 +27,25 @@ import static eu.openg.aws.s3.test.S3Assertions.assertThat;
 
 public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
 
-    private static final String BUCKET_NAME = "test";
-
     @Before
     public void createTestBucket() throws Exception {
         s3.createBucket(BUCKET_NAME);
     }
 
     @Test
+    public void putObjectToAMissingBucket() {
+        assertThatNoSuchBucketExists(() ->
+                s3.putObject("missing_bucket", "new_object", getResourceAsFile("fixtures/testFile.txt")));
+    }
+
+    @Test
+    public void putObjectToOtherOwnersBucket() {
+        assertThatAllAccessIsDisabled(() ->
+                s3.putObject("existing_bucket", "new_object", getResourceAsFile("fixtures/testFile.txt")));
+    }
+
+    @Test
     public void putObjectToABucket() {
-        System.out.println(s3.putObject(BUCKET_NAME, "new_object", getResourceAsFile("fixtures/testFile.txt")).getETag());
         assertThat(s3.putObject(BUCKET_NAME, "new_object", getResourceAsFile("fixtures/testFile.txt")))
                 .hasETag()
                 .hasContentMd5("xrDqpzmbwwEjxCnAnMLa2A==");

@@ -69,8 +69,8 @@ public class AmazonS3FakeBucketTest extends AmazonS3FakeTest {
 
     @Test
     public void createNewBucket() {
-        assertThat(s3.createBucket("new_bucket")).isEqualToComparingFieldByField(new Bucket("new_bucket"));
-        assertThat(s3.doesBucketExist("new_bucket")).isTrue();
+        assertThat(s3.createBucket(BUCKET_NAME)).isEqualToComparingFieldByField(new Bucket(BUCKET_NAME));
+        assertThat(s3.doesBucketExist(BUCKET_NAME)).isTrue();
     }
 
     @Test
@@ -107,37 +107,19 @@ public class AmazonS3FakeBucketTest extends AmazonS3FakeTest {
 
     @Test
     public void deleteMissingBucket() {
-        assertThatThrownBy(() -> s3.deleteBucket("missing_bucket"))
-                .hasRequestId()
-                .hasErrorCode("NoSuchBucket")
-                .hasErrorMessage("The specified bucket does not exist")
-                .hasStatusCode(404)
-                .hasExtendedRequestId()
-                .containAdditionalDetail("BucketName", "missing_bucket")
-                .containAdditionalDetailWithKey("Error")
-                .hasServiceName("Amazon S3")
-                .hasErrorType(Client);
+        assertThatNoSuchBucketExists(() -> s3.deleteBucket("missing_bucket"));
     }
 
     @Test
     public void deleteOtherOwnersBucket() {
-        assertThatThrownBy(() -> s3.deleteBucket("existing_bucket"))
-                .hasRequestId()
-                .hasErrorCode("AllAccessDisabled")
-                .hasErrorMessage("All access to this object has been disabled")
-                .hasStatusCode(403)
-                .hasExtendedRequestId()
-                .containAdditionalDetailWithKey("Error")
-                .hasServiceName("Amazon S3")
-                .hasErrorType(Client);
+        assertThatAllAccessIsDisabled(() -> s3.deleteBucket("existing_bucket"));
     }
 
     @Test
     public void deleteABucket() {
-        String bucketName = "new_bucket";
-        s3.createBucket(bucketName);
-        assertThat(s3.doesBucketExist("new_bucket")).isTrue();
-        s3.deleteBucket("new_bucket");
-        assertThat(s3.doesBucketExist("new_bucket")).isFalse();
+        s3.createBucket(BUCKET_NAME);
+        assertThat(s3.doesBucketExist(BUCKET_NAME)).isTrue();
+        s3.deleteBucket(BUCKET_NAME);
+        assertThat(s3.doesBucketExist(BUCKET_NAME)).isFalse();
     }
 }

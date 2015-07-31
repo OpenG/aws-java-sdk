@@ -85,20 +85,13 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
 
     @Override
     public void deleteBucket(String bucketName) {
-        if (bucketName.startsWith("existing"))
-            throw buildException("All access to this object has been disabled", "AllAccessDisabled", 403);
-        if (!doesBucketExist(bucketName))
-            throw buildException(
-                    "The specified bucket does not exist",
-                    "NoSuchBucket", 404,
-                    new HashMap<String, String>() {{
-                        put("BucketName", bucketName);
-                    }});
+        checkBucketAccess(bucketName);
         buckets.remove(bucketName);
     }
 
     @Override
     public PutObjectResult putObject(String bucketName, String key, File file) {
+        checkBucketAccess(bucketName);
         try {
             PutObjectResult result = new PutObjectResult();
             result.setETag(encodeHexString(createId().getBytes()));
@@ -107,6 +100,18 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         } catch (IOException e) {
             throw new AmazonClientException(e);
         }
+    }
+
+    private void checkBucketAccess(String bucketName) {
+        if (!doesBucketExist(bucketName))
+            throw buildException(
+                    "The specified bucket does not exist",
+                    "NoSuchBucket", 404,
+                    new HashMap<String, String>() {{
+                        put("BucketName", bucketName);
+                    }});
+        if (bucketName.startsWith("existing"))
+            throw buildException("All access to this object has been disabled", "AllAccessDisabled", 403);
     }
 
     private static AmazonS3Exception buildException(String message, String errorCode, int statusCode) {
