@@ -17,9 +17,14 @@
 package eu.openg.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -45,5 +50,27 @@ public class S3BucketTest {
 
         assertThat(bucket.getObject("object_key")).isEqualTo(result);
         verify(s3).getObject(BUCKET_NAME, "object_key");
+    }
+
+    @Test
+    public void putObject() {
+        PutObjectResult result = mock(PutObjectResult.class);
+        File file = getResourceAsFile("fixtures/testFile.txt");
+        when(s3.putObject(anyString(), anyString(), any())).thenReturn(result);
+
+        assertThat(bucket.putObject("object_key", getResourceAsFile("fixtures/testFile.txt"))).isEqualTo(result);
+        verify(s3).putObject(BUCKET_NAME, "object_key", file);
+    }
+
+    private File getResourceAsFile(String name) {
+        try {
+            return new File(getResource(name).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private URL getResource(String name) {
+        return Thread.currentThread().getContextClassLoader().getResource(name);
     }
 }

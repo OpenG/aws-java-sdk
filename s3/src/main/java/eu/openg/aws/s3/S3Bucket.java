@@ -35,4 +35,8 @@ public class S3Bucket {
     S3Object getObject(String key) {
         return s3.getObject(bucketName, key);
     }
+
+    public PutObjectResult putObject(String key, File file) {
+        return s3.putObject(bucketName, key, file);
+    }
 }
