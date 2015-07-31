@@ -19,10 +19,7 @@ package eu.openg.aws.s3.internal;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AbstractAmazonS3;
 import com.amazonaws.services.s3.internal.AmazonS3ExceptionBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.Owner;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +28,7 @@ import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.*;
 
+import static com.amazonaws.services.s3.Headers.ETAG;
 import static com.amazonaws.util.BinaryUtils.toBase64;
 import static com.amazonaws.util.Md5Utils.md5AsBase64;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
@@ -42,6 +40,7 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
     private final Clock clock;
 
     private Map<String, Bucket> buckets = new HashMap<>();
+    private Map<String, S3Object> objects = new HashMap<>();
 
     public AmazonS3Fake(Clock clock) {
         this.clock = clock;
@@ -84,6 +83,16 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
     }
 
     @Override
+    public S3Object getObject(String bucketName, String key) {
+        checkBucketAccess(bucketName);
+        if (!objects.containsKey(key))
+            throw buildException("The specified key does not exist.", "NoSuchKey", 404, new HashMap<String, String>() {{
+                put("Key", key);
+            }});
+        return objects.get(key);
+    }
+
+    @Override
     public void deleteBucket(String bucketName) {
         checkBucketAccess(bucketName);
         buckets.remove(bucketName);
@@ -96,10 +105,28 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
             PutObjectResult result = new PutObjectResult();
             result.setETag(encodeHexString(createId().getBytes()));
             result.setContentMd5(md5AsBase64(file));
+            objects.put(key, buildS3Object(bucketName, key, file));
             return result;
         } catch (IOException e) {
             throw new AmazonClientException(e);
         }
+    }
+
+    private S3Object buildS3Object(String bucketName, String key, File file) throws IOException {
+        S3Object object = new S3Object();
+        object.setBucketName(bucketName);
+        object.setKey(key);
+        object.setObjectContent(file.toURI().toURL().openStream());
+        fillMetadata(object.getObjectMetadata(), file);
+        return object;
+    }
+
+    private void fillMetadata(ObjectMetadata metadata, File file) {
+        metadata.setHeader("Accept-Ranges", "bytes");
+        metadata.setHeader(ETAG, encodeHexString(createId().getBytes()));
+        metadata.setLastModified(Date.from(clock.instant()));
+        metadata.setContentLength(file.length());
+        metadata.setContentType("text/plain");
     }
 
     private void checkBucketAccess(String bucketName) {

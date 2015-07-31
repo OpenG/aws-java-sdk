@@ -16,23 +16,21 @@
 
 package eu.openg.aws.s3.test.error.s3;
 
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
 import org.assertj.core.error.BasicErrorMessageFactory;
 import org.assertj.core.error.ErrorMessageFactory;
 
-public class ShouldHaveContentMd5 extends BasicErrorMessageFactory {
+public class ShouldHaveKey extends BasicErrorMessageFactory {
 
-    public static ErrorMessageFactory shouldHaveContentMd5(PutObjectResult actual, String expected) {
-        return expected == null ? new ShouldHaveContentMd5(actual) : new ShouldHaveContentMd5(actual, expected);
+    public static ErrorMessageFactory shouldHaveKey(S3Object actual, String expected) {
+        return expected == null ? new ShouldHaveKey(actual) : new ShouldHaveKey(actual, expected);
     }
 
-    private ShouldHaveContentMd5(PutObjectResult actual, String expected) {
-        super("%nExpecting contentMd5 of%n  <%s>%nto be:%n  <%s>%nbut was:%n  <%s>", actual, expected,
-                actual.getContentMd5());
+    private ShouldHaveKey(S3Object actual, String expected) {
+        super("%nExpecting key of%n  <%s>%nto be:%n  <%s>%nbut was:%n  <%s>", actual, expected, actual.getKey());
     }
 
-    private ShouldHaveContentMd5(PutObjectResult actual) {
-        super("%nExpecting PutObjectResult:%n  <%s>%nnot to have ContentMd5 but had:%n  <%s>", actual,
-                actual.getContentMd5());
+    private ShouldHaveKey(S3Object actual) {
+        super("%nExpecting S3Object:%n  <%s>%nnot to have key but had:%n  <%s>", actual, actual.getKey());
     }
 }

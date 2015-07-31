@@ -17,11 +17,16 @@
 package eu.openg.aws.s3.test;
 
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
 import org.assertj.core.api.Assertions;
 
 public class S3Assertions extends Assertions {
 
     public static PutObjectResultAssert assertThat(PutObjectResult actual) {
         return new PutObjectResultAssert(actual);
+    }
+
+    public static S3ObjectAssert assertThat(S3Object actual) {
+        return new S3ObjectAssert(actual);
     }
 }
