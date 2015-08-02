@@ -1,7 +1,5 @@
 # Amazon S3 SDK for Java 8
 
-[![Build Status](https://travis-ci.org/OpenG/aws-java-sdk.svg?branch=master)](https://travis-ci.org/OpenG/aws-java-sdk)
-
 Amazon S3 (Simple Storage Service) SDK (Software Development Kit) for Java 8.
 
 # SDK

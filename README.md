@@ -1,5 +1,7 @@
 # AWS SDK for Java 8
 
+[![Build Status](https://travis-ci.org/OpenG/aws-java-sdk.svg?branch=master)](https://travis-ci.org/OpenG/aws-java-sdk)
+
 AWS (Amazon Web Services) SDK (Software Development Kit) for Java 8.
 
 This project is an attempt to create a set of AWS SDK libraries and Test utilities to make AWS adoption easier. Though
