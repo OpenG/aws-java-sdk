@@ -19,7 +19,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     group = 'eu.openg.aws'
-    version = '0.2-SNAPSHOT'
+    version = '0.2'
 
     repositories {
         mavenCentral()
