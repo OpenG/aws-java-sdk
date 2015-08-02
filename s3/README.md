@@ -28,7 +28,7 @@ if (!service.doesBucketExist("bucket_name"))
 
 ## S3Bucket
 
-Provides an interface to manipulate objects in Amazon S3 Bucket.
+Provides an interface for manipulating objects in Amazon S3 Bucket.
 
 ### Methods
 
