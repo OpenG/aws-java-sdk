@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-dependencies {
-    testCompile project(':s3-test')
-}
+package eu.openg.aws.s3.test.api;
 
-publishing.publications {
-    mavenJava(MavenPublication) {
-        artifactId = 's3-sdk'
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
 
-        from components.java
+public class Assertions {
+
+    protected Assertions() {
+    }
+
+    public static PutObjectResultAssert assertThat(PutObjectResult actual) {
+        return new PutObjectResultAssert(actual);
+    }
+
+    public static S3ObjectAssert assertThat(S3Object actual) {
+        return new S3ObjectAssert(actual);
     }
 }

@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-dependencies {
-    testCompile project(':s3-test')
-}
+package eu.openg.aws.s3.test.error;
 
-publishing.publications {
-    mavenJava(MavenPublication) {
-        artifactId = 's3-sdk'
+import org.assertj.core.error.BasicErrorMessageFactory;
+import org.assertj.core.error.ErrorMessageFactory;
 
-        from components.java
+public class ShouldHaveETag extends BasicErrorMessageFactory {
+
+    private static final ShouldHaveETag INSTANCE = new ShouldHaveETag();
+
+    public static ErrorMessageFactory shouldHaveETag() {
+        return INSTANCE;
+    }
+
+    private ShouldHaveETag() {
+        super("%nExpecting ETag not to be null");
     }
 }
