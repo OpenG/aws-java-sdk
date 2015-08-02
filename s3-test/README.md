@@ -71,6 +71,19 @@ Buckets prefixed with keyword `existing` (i.e., `existing_bucket`) are considere
 Keep in mind that this is a 3rd party library and so it may work slightly different than the actual service does. Though
 it should be close enough for basic unit testing.
 
+## Assertions
+
+Entry point for all Amazon S3 assertions.
+
+### Example
+
+```java
+import static eu.openg.aws.s3.test.api.Assertions.assertThat;
+...
+assertThat(s3Object).hasKey("some_key");
+assertThat(s3Object).hasSameContentAs(inputStream);
+```
+
 ## S3ThrowableAssert
 
 A basic assert helper based on [AssertJ](http://assertj.org) for testing out Amazon exceptions.

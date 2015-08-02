@@ -18,19 +18,20 @@ package eu.openg.aws.s3.test;
 
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
-import org.assertj.core.api.Assertions;
+import eu.openg.aws.s3.test.api.Assertions;
 import org.junit.Test;
 
-import static eu.openg.aws.s3.test.S3Assertions.assertThat;
+import static eu.openg.aws.s3.test.api.Assertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class S3AssertionsTest {
+public class AssertionsTest {
 
     @Test
-    public void s3AssertionsShouldBringStandardAssertionsAlong() {
-        assertThat(new S3Assertions()).isInstanceOf(Assertions.class);
+    public void assertionsAreStaticAccessOnly() throws IllegalAccessException, InstantiationException {
+        org.assertj.core.api.Assertions.assertThatThrownBy(Assertions.class::newInstance)
+                .isInstanceOf(IllegalAccessException.class);
     }
 
     @Test

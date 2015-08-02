@@ -29,7 +29,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 
 import static com.amazonaws.AmazonServiceException.ErrorType.Client;
-import static eu.openg.aws.s3.test.S3Assertions.assertThat;
+import static eu.openg.aws.s3.test.api.Assertions.assertThat;
 import static org.assertj.core.api.S3ThrowableAssert.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 

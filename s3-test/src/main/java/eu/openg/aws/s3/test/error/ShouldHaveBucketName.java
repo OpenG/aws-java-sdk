@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.test.error.s3;
+package eu.openg.aws.s3.test.error;
 
 import com.amazonaws.services.s3.model.S3Object;
 import org.assertj.core.error.BasicErrorMessageFactory;
 import org.assertj.core.error.ErrorMessageFactory;
 
-public class ShouldHaveKey extends BasicErrorMessageFactory {
+public class ShouldHaveBucketName extends BasicErrorMessageFactory {
 
-    public static ErrorMessageFactory shouldHaveKey(S3Object actual, String expected) {
-        return expected == null ? new ShouldHaveKey(actual) : new ShouldHaveKey(actual, expected);
+    public static ErrorMessageFactory shouldHaveBucketName(S3Object actual, String expected) {
+        return expected == null ? new ShouldHaveBucketName(actual) : new ShouldHaveBucketName(actual, expected);
     }
 
-    private ShouldHaveKey(S3Object actual, String expected) {
-        super("%nExpecting key of%n  <%s>%nto be:%n  <%s>%nbut was:%n  <%s>", actual, expected, actual.getKey());
+    private ShouldHaveBucketName(S3Object actual, String expected) {
+        super("%nExpecting bucketName of%n  <%s>%nto be:%n  <%s>%nbut was:%n  <%s>", actual, expected,
+                actual.getBucketName());
     }
 
-    private ShouldHaveKey(S3Object actual) {
-        super("%nExpecting S3Object:%n  <%s>%nnot to have key but had:%n  <%s>", actual, actual.getKey());
+    private ShouldHaveBucketName(S3Object actual) {
+        super("%nExpecting S3Object:%n  <%s>%nnot to have bucketName but had:%n  <%s>", actual, actual.getKey());
     }
 }

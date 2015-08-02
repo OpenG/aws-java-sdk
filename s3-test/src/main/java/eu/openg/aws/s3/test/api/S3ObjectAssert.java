@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.test;
+package eu.openg.aws.s3.test.api;
 
 import com.amazonaws.services.s3.model.S3Object;
-import eu.openg.aws.s3.test.internal.S3Objects;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.internal.Failures;
 import org.assertj.core.internal.InputStreams;
 import org.assertj.core.internal.Maps;
+import org.assertj.core.internal.Objects;
 import org.assertj.core.util.VisibleForTesting;
 
 import java.io.InputStream;
 import java.util.Map;
 
+import static eu.openg.aws.s3.test.error.ShouldHaveBucketName.shouldHaveBucketName;
+import static eu.openg.aws.s3.test.error.ShouldHaveKey.shouldHaveKey;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.assertj.core.util.Arrays.array;
+import static org.assertj.core.util.Objects.areEqual;
 
 public class S3ObjectAssert extends AbstractAssert<S3ObjectAssert, S3Object> {
 
     @VisibleForTesting
-    private S3Objects s3Objects = S3Objects.instance();
+    private Objects objects = Objects.instance();
 
     @VisibleForTesting
-    InputStreams inputStreams = InputStreams.instance();
+    private Failures failures = Failures.instance();
+
+    @VisibleForTesting
+    private InputStreams inputStreams = InputStreams.instance();
 
     @VisibleForTesting
     private Maps maps = Maps.instance();
@@ -45,12 +52,16 @@ public class S3ObjectAssert extends AbstractAssert<S3ObjectAssert, S3Object> {
     }
 
     public S3ObjectAssert hasKey(String expected) {
-        s3Objects.assertHasKey(info, actual, expected);
+        objects.assertNotNull(info, actual);
+        if (!areEqual(actual.getKey(), expected))
+            throw failures.failure(info, shouldHaveKey(actual, expected));
         return myself;
     }
 
     public S3ObjectAssert hasBucketName(String expected) {
-        s3Objects.assertHasBucketName(info, actual, expected);
+        objects.assertNotNull(info, actual);
+        if (!areEqual(actual.getBucketName(), expected))
+            throw failures.failure(info, shouldHaveBucketName(actual, expected));
         return myself;
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.test.error.s3;
+package eu.openg.aws.s3.test.error;
 
 import org.assertj.core.error.BasicErrorMessageFactory;
 import org.assertj.core.error.ErrorMessageFactory;

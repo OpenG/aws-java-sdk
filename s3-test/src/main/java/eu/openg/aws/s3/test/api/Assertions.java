@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.test;
+package eu.openg.aws.s3.test.api;
 
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
-import org.assertj.core.api.Assertions;
 
-public class S3Assertions extends Assertions {
+public class Assertions {
+
+    protected Assertions() {
+    }
 
     public static PutObjectResultAssert assertThat(PutObjectResult actual) {
         return new PutObjectResultAssert(actual);
