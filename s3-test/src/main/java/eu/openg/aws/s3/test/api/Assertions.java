@@ -16,12 +16,22 @@
 
 package eu.openg.aws.s3.test.api;
 
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.Owner;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
 public class Assertions {
 
     protected Assertions() {
+    }
+
+    public static BucketAssert assertThat(Bucket actual) {
+        return new BucketAssert(actual);
+    }
+
+    public static OwnerAssert assertThat(Owner actual) {
+        return new OwnerAssert(actual);
     }
 
     public static PutObjectResultAssert assertThat(PutObjectResult actual) {

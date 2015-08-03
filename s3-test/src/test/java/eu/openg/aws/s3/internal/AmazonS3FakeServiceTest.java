@@ -17,8 +17,10 @@
 package eu.openg.aws.s3.internal;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.Owner;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -29,15 +31,21 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.amazonaws.AmazonServiceException.ErrorType.Client;
+import static eu.openg.aws.s3.test.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.S3ThrowableAssert.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-public class AmazonS3FakeBucketTest extends AmazonS3FakeTest {
+public class AmazonS3FakeServiceTest extends AmazonS3FakeTest {
 
     @Test
-    public void createFake() {
+    public void fakeHasAllAmazonS3Methods() {
         assertThat(new AmazonS3Fake()).isInstanceOf(AmazonS3.class);
+    }
+
+    @Test
+    public void getS3AccountOwner() {
+        assertThat(s3.getS3AccountOwner()).hasDisplayName("test");
     }
 
     @Test
@@ -69,15 +77,18 @@ public class AmazonS3FakeBucketTest extends AmazonS3FakeTest {
 
     @Test
     public void createNewBucket() {
-        assertThat(s3.createBucket(BUCKET_NAME)).isEqualToComparingFieldByField(new Bucket(BUCKET_NAME));
+        assertThat(s3.createBucket(BUCKET_NAME)).hasName(BUCKET_NAME);
         assertThat(s3.doesBucketExist(BUCKET_NAME)).isTrue();
     }
 
     @Test
     public void listCurrentBuckets() {
         assertThat(s3.listBuckets()).hasSize(0);
-        s3.createBucket("new_bucket");
-        assertThat(s3.listBuckets()).hasSize(1);
+        s3.createBucket(BUCKET_NAME);
+
+        List<Bucket> buckets = s3.listBuckets();
+        assertThat(buckets).hasSize(1);
+        assertThat(buckets.get(0)).hasName(BUCKET_NAME);
     }
 
     @Test

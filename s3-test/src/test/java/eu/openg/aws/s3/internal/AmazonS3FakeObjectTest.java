@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -95,7 +96,7 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
                 .containsMetadataEntry("Last-Modified", Date.from(addedTime))
                 .containsMetadataEntry("Content-Length", 29l)
                 .containsMetadataEntry("Content-Type", "text/plain")
-                .hasSameContentAs(file.toURI().toURL().openStream());
+                .hasSameContentAs(new FileInputStream(file));
     }
 
     @Test
