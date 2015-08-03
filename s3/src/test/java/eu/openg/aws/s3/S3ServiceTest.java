@@ -17,13 +17,12 @@
 package eu.openg.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class S3ServiceTest {
 
@@ -56,16 +55,8 @@ public class S3ServiceTest {
     }
 
     @Test
-    public void getMissingBucket() {
-        assertThat(service.getBucket(BUCKET_NAME)).isEmpty();
-        verify(s3).listBuckets();
-    }
-
-    @Test
-    public void getExistingBucket() {
-        when(s3.listBuckets()).thenReturn(singletonList(new Bucket(BUCKET_NAME)));
-        assertThat(service.getBucket(BUCKET_NAME)).isPresent();
-        verify(s3).listBuckets();
+    public void getBucket() {
+        assertThat(service.getBucket(BUCKET_NAME).getName()).isEqualTo(BUCKET_NAME);
     }
 
     @Test

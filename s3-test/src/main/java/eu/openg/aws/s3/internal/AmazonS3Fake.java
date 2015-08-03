@@ -29,6 +29,7 @@ import java.time.Clock;
 import java.util.*;
 
 import static com.amazonaws.services.s3.Headers.ETAG;
+import static com.amazonaws.services.s3.internal.Constants.*;
 import static com.amazonaws.util.BinaryUtils.toBase64;
 import static com.amazonaws.util.Md5Utils.md5AsBase64;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
@@ -140,12 +141,16 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         if (!doesBucketExist(bucketName))
             throw buildException(
                     "The specified bucket does not exist",
-                    "NoSuchBucket", 404,
+                    "NoSuchBucket",
+                    NO_SUCH_BUCKET_STATUS_CODE,
                     new HashMap<String, String>() {{
                         put("BucketName", bucketName);
                     }});
         if (bucketName.startsWith("existing"))
-            throw buildException("All access to this object has been disabled", "AllAccessDisabled", 403);
+            throw buildException(
+                    "All access to this object has been disabled",
+                    "AllAccessDisabled",
+                    BUCKET_ACCESS_FORBIDDEN_STATUS_CODE);
     }
 
     private static AmazonS3Exception buildException(String message, String errorCode, int statusCode) {
@@ -156,7 +161,7 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
             String message, String errorCode, int statusCode, Map<String, String> additionalDetails
     ) {
         AmazonS3Exception exception = newException(message, errorCode, statusCode, additionalDetails);
-        exception.setServiceName("Amazon S3");
+        exception.setServiceName(S3_SERVICE_DISPLAY_NAME);
         return exception;
     }
 

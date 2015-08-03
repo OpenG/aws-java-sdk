@@ -17,30 +17,41 @@
 package eu.openg.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import javafx.beans.binding.BooleanExpression;
 
 import java.io.File;
+import java.io.InputStream;
 
 public class S3Bucket {
 
     private final AmazonS3 s3;
-    private final String bucketName;
+    private final String name;
 
-    public S3Bucket(AmazonS3 s3, String bucketName) {
+    public S3Bucket(AmazonS3 s3, String name) {
         this.s3 = s3;
-        this.bucketName = bucketName;
+        this.name = name;
     }
 
-    S3Object getObject(String key) {
-        return s3.getObject(bucketName, key);
+    public String getName() {
+        return name;
+    }
+
+    public S3Object getObject(String key) {
+        return s3.getObject(name, key);
     }
 
     public PutObjectResult putObject(String key, File file) {
-        return s3.putObject(bucketName, key, file);
+        return s3.putObject(name, key, file);
+    }
+
+    public PutObjectResult putObject(String key, InputStream input, ObjectMetadata metadata) {
+        return s3.putObject(name, key, input, metadata);
     }
 
     public void deleteObject(String key) {
-        s3.deleteObject(bucketName, key);
+        s3.deleteObject(name, key);
     }
 }

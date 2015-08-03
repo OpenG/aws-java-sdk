@@ -21,7 +21,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class S3Service {
@@ -44,10 +43,8 @@ public class S3Service {
         return s3.listBuckets();
     }
 
-    public Optional<S3Bucket> getBucket(String bucketName) {
-        return listBuckets().stream().anyMatch(bucket -> Objects.equals(bucket.getName(), bucketName))
-                ? Optional.of(new S3Bucket(s3, bucketName))
-                : Optional.empty();
+    public S3Bucket getBucket(String bucketName) {
+        return new S3Bucket(s3, bucketName);
     }
 
     public Bucket createBucket(String bucketName) {

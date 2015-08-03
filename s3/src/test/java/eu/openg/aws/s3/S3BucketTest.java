@@ -17,14 +17,14 @@
 package eu.openg.aws.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -54,30 +54,29 @@ public class S3BucketTest {
     }
 
     @Test
-    public void putObject() {
+    public void putFile() {
+        File file = mock(File.class);
         PutObjectResult result = mock(PutObjectResult.class);
-        File file = getResourceAsFile("fixtures/testFile.txt");
         when(s3.putObject(anyString(), anyString(), any())).thenReturn(result);
 
-        assertThat(bucket.putObject(OBJECT_KEY, getResourceAsFile("fixtures/testFile.txt"))).isEqualTo(result);
+        assertThat(bucket.putObject(OBJECT_KEY, file)).isEqualTo(result);
         verify(s3).putObject(BUCKET_NAME, OBJECT_KEY, file);
+    }
+
+    @Test
+    public void putObjectWithMetadata() {
+        InputStream input = mock(InputStream.class);
+        PutObjectResult result = mock(PutObjectResult.class);
+        ObjectMetadata metadata = mock(ObjectMetadata.class);
+        when(s3.putObject(anyString(), anyString(), any(), any())).thenReturn(result);
+
+        assertThat(bucket.putObject(OBJECT_KEY, input, metadata)).isEqualTo(result);
+        verify(s3).putObject(BUCKET_NAME, OBJECT_KEY, input, metadata);
     }
 
     @Test
     public void deleteObject() {
         bucket.deleteObject(OBJECT_KEY);
         verify(s3).deleteObject(BUCKET_NAME, OBJECT_KEY);
-    }
-
-    private File getResourceAsFile(String name) {
-        try {
-            return new File(getResource(name).toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private URL getResource(String name) {
-        return Thread.currentThread().getContextClassLoader().getResource(name);
     }
 }
