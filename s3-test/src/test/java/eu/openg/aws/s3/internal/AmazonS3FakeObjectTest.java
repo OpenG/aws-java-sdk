@@ -16,12 +16,15 @@
 
 package eu.openg.aws.s3.internal;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
@@ -63,6 +66,19 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
     }
 
     @Test
+    public void putObjectWithMetadataToABucket() throws IOException {
+        s3.putObject(BUCKET_NAME, OBJECT_NAME, getResourceAsStream("fixtures/testFile.txt"), new ObjectMetadata() {{
+            addUserMetadata("test", "value");
+            addUserMetadata("someValue", "withCamelCase");
+            addUserMetadata("and_another", "with_underscores");
+        }});
+        assertThat(s3.getObjectMetadata(BUCKET_NAME, OBJECT_NAME))
+                .containsUserEntry("test", "value")
+                .containsUserEntry("someValue", "withCamelCase")
+                .containsUserEntry("and_another", "with_underscores");
+    }
+
+    @Test
     public void getMissingObjectFromABucket() {
         assertThatThrownBy(() -> s3.getObject(BUCKET_NAME, OBJECT_NAME))
                 .hasRequestId()
@@ -88,15 +104,19 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
         when(clock.instant()).thenReturn(addedTime);
 
         s3.putObject(BUCKET_NAME, OBJECT_NAME, file);
-        assertThat(s3.getObject(BUCKET_NAME, OBJECT_NAME))
+        S3Object object = s3.getObject(BUCKET_NAME, OBJECT_NAME);
+
+        assertThat(object)
                 .hasKey(OBJECT_NAME)
                 .hasBucketName(BUCKET_NAME)
-                .containsMetadataEntry("Accept-Ranges", "bytes")
-                .containsMetadataKey("ETag")
-                .containsMetadataEntry("Last-Modified", Date.from(addedTime))
-                .containsMetadataEntry("Content-Length", 29l)
-                .containsMetadataEntry("Content-Type", "text/plain")
                 .hasSameContentAs(new FileInputStream(file));
+
+        assertThat(object.getObjectMetadata())
+                .containsEntry("Accept-Ranges", "bytes")
+                .containsKey("ETag")
+                .containsEntry("Last-Modified", Date.from(addedTime))
+                .containsEntry("Content-Length", 29l)
+                .containsEntry("Content-Type", "text/plain");
     }
 
     @Test
@@ -126,6 +146,10 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private InputStream getResourceAsStream(String name) {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
     }
 
     private URL getResource(String name) {

@@ -23,6 +23,7 @@ import com.amazonaws.services.s3.model.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,6 +84,10 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         buckets.put(bucketName, new FakeBucketsContainer(bucket));
     }
 
+    public ObjectMetadata getObjectMetadata(String bucketName, String key) {
+        return getBucketsContainer(bucketName).getObjectMetadata(key);
+    }
+
     @Override
     public S3Object getObject(String bucketName, String key) {
         return getBucketsContainer(bucketName).getObject(key);
@@ -97,26 +102,35 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
     @Override
     public PutObjectResult putObject(String bucketName, String key, File file) {
         try {
-            return getBucketsContainer(bucketName).putObject(buildS3Object(bucketName, key, file));
+            return putObject(bucketName, key, new FileInputStream(file));
         } catch (IOException e) {
             throw new AmazonClientException(e);
         }
     }
 
-    private S3Object buildS3Object(String bucketName, String key, File file) throws IOException {
+    private PutObjectResult putObject(String bucketName, String key, InputStream input) {
+        return putObject(bucketName, key, input, new ObjectMetadata());
+    }
+
+    @Override
+    public PutObjectResult putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
+        return getBucketsContainer(bucketName).putObject(buildS3Object(bucketName, key, input, metadata));
+    }
+
+    private S3Object buildS3Object(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
         S3Object object = new S3Object();
         object.setBucketName(bucketName);
         object.setKey(key);
-        object.setObjectContent(new FileInputStream(file));
-        fillMetadata(object.getObjectMetadata(), file);
+        object.setObjectContent(input);
+        object.setObjectMetadata(metadata);
+        fillSystemMetadata(metadata);
         return object;
     }
 
-    private void fillMetadata(ObjectMetadata metadata, File file) {
+    private void fillSystemMetadata(ObjectMetadata metadata) {
         metadata.setHeader("Accept-Ranges", "bytes");
         metadata.setHeader(ETAG, encodeHexString(createId().getBytes()));
         metadata.setLastModified(Date.from(clock.instant()));
-        metadata.setContentLength(file.length());
         metadata.setContentType("text/plain");
     }
 

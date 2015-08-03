@@ -44,9 +44,6 @@ public class S3ObjectAssert extends AbstractAssert<S3ObjectAssert, S3Object> {
     @VisibleForTesting
     private InputStreams inputStreams = InputStreams.instance();
 
-    @VisibleForTesting
-    private Maps maps = Maps.instance();
-
     protected S3ObjectAssert(S3Object actual) {
         super(actual, S3ObjectAssert.class);
     }
@@ -63,20 +60,6 @@ public class S3ObjectAssert extends AbstractAssert<S3ObjectAssert, S3Object> {
         if (!areEqual(actual.getBucketName(), expected))
             throw failures.failure(info, shouldHaveBucketName(actual, expected));
         return myself;
-    }
-
-    public S3ObjectAssert containsMetadataEntry(String key, Object value) {
-        maps.assertContains(info, extractMetadata(actual), array(entry(key, value)));
-        return myself;
-    }
-
-    public S3ObjectAssert containsMetadataKey(String key) {
-        maps.assertContainsKeys(info, extractMetadata(actual), key);
-        return myself;
-    }
-
-    private Map<String, Object> extractMetadata(S3Object actual) {
-        return actual.getObjectMetadata().getRawMetadata();
     }
 
     public S3ObjectAssert hasSameContentAs(InputStream expected) {

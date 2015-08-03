@@ -17,6 +17,7 @@
 package eu.openg.aws.s3.internal;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
 import java.io.ByteArrayInputStream;
@@ -34,6 +35,7 @@ class FakeS3Object {
         try {
             this.object = object;
             this.content = toByteArray(object.getObjectContent());
+            updateMetadata(object.getObjectMetadata());
         } catch (IOException e) {
             throw new AmazonClientException(e);
         }
@@ -43,8 +45,16 @@ class FakeS3Object {
         return md5AsBase64(content);
     }
 
+    ObjectMetadata getMetadata() {
+        return object.getObjectMetadata();
+    }
+
     S3Object toS3Object() {
         object.setObjectContent(new ByteArrayInputStream(content));
         return object;
+    }
+
+    private void updateMetadata(ObjectMetadata metadata) {
+        metadata.setContentLength(content.length);
     }
 }

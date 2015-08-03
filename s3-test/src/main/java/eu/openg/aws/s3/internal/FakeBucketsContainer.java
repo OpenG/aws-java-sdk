@@ -17,6 +17,7 @@
 package eu.openg.aws.s3.internal;
 
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
@@ -36,10 +37,18 @@ class FakeBucketsContainer {
         this.bucket = bucket;
     }
 
+    ObjectMetadata getObjectMetadata(String key) {
+        return getFakeObject(key).getMetadata();
+    }
+
     S3Object getObject(String key) {
+        return getFakeObject(key).toS3Object();
+    }
+
+    private FakeS3Object getFakeObject(String key) {
         if (!objects.containsKey(key))
             throw buildNoSuchKeyException(key);
-        return objects.get(key).toS3Object();
+        return objects.get(key);
     }
 
     PutObjectResult putObject(S3Object object) {
