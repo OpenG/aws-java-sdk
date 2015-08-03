@@ -20,7 +20,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
-import javafx.beans.binding.BooleanExpression;
 
 import java.io.File;
 import java.io.InputStream;
@@ -37,6 +36,10 @@ public class S3Bucket {
 
     public String getName() {
         return name;
+    }
+
+    public ObjectMetadata getObjectMetadata(String key) {
+        return s3.getObjectMetadata(name, key);
     }
 
     public S3Object getObject(String key) {

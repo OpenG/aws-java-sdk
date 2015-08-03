@@ -45,6 +45,15 @@ public class S3BucketTest {
     }
 
     @Test
+    public void getObjectMetadata() {
+        ObjectMetadata result = mock(ObjectMetadata.class);
+        when(s3.getObjectMetadata(anyString(), anyString())).thenReturn(result);
+
+        assertThat(bucket.getObjectMetadata(OBJECT_KEY)).isEqualTo(result);
+        verify(s3).getObjectMetadata(BUCKET_NAME, OBJECT_KEY);
+    }
+
+    @Test
     public void getObject() {
         S3Object result = mock(S3Object.class);
         when(s3.getObject(anyString(), anyString())).thenReturn(result);
