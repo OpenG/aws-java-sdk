@@ -21,13 +21,11 @@ import org.assertj.core.error.ErrorMessageFactory;
 
 public class ShouldHaveETag extends BasicErrorMessageFactory {
 
-    private static final ShouldHaveETag INSTANCE = new ShouldHaveETag();
-
-    public static ErrorMessageFactory shouldHaveETag() {
-        return INSTANCE;
+    public static ErrorMessageFactory shouldHaveETag(Object actual, String expected, String found) {
+        return new ShouldHaveETag(actual, expected, found);
     }
 
-    private ShouldHaveETag() {
-        super("%nExpecting ETag not to be null");
+    private ShouldHaveETag(Object actual, String expected, String found) {
+        super("%nExpecting%n  <%s>%nto have ETag:%n  <%s>%nbut had:%n  <%s>", actual, expected, found);
     }
 }

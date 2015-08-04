@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
+package eu.openg.aws.s3.test.error;
 
-    group = 'eu.openg.aws'
-    version = '0.3.0'
+import org.assertj.core.error.BasicErrorMessageFactory;
+import org.assertj.core.error.ErrorMessageFactory;
 
-    repositories {
-        mavenCentral()
+public class ShouldHaveDisplayName extends BasicErrorMessageFactory {
+
+    public static ErrorMessageFactory shouldHaveDisplayName(Object actual, String expected, String found) {
+        return new ShouldHaveDisplayName(actual, expected, found);
     }
 
-    dependencies {
-        compile 'com.amazonaws:aws-java-sdk-s3:1.10.5.1'
-        testCompile 'junit:junit:4.12',
-                'org.assertj:assertj-core:3.1.0',
-                'org.mockito:mockito-core:1.10.19'
+    private ShouldHaveDisplayName(Object actual, String expected, String found) {
+        super("%nExpecting%n  <%s>%nto have displayName:%n  <%s>%nbut had:%n  <%s>", actual, expected, found);
     }
 }

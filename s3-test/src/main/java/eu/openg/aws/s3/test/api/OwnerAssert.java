@@ -16,17 +16,16 @@
 
 package eu.openg.aws.s3.test.api;
 
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.Owner;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.internal.Failures;
 import org.assertj.core.internal.Objects;
 import org.assertj.core.util.VisibleForTesting;
 
-import static eu.openg.aws.s3.test.error.ShouldHaveContentMd5.shouldHaveContentMd5;
-import static eu.openg.aws.s3.test.error.ShouldHaveETag.shouldHaveETag;
+import static eu.openg.aws.s3.test.error.ShouldHaveDisplayName.shouldHaveDisplayName;
 import static org.assertj.core.util.Objects.areEqual;
 
-public class PutObjectResultAssert extends AbstractAssert<PutObjectResultAssert, PutObjectResult> {
+public class OwnerAssert extends AbstractAssert<OwnerAssert, Owner> {
 
     @VisibleForTesting
     private Objects objects = Objects.instance();
@@ -34,21 +33,14 @@ public class PutObjectResultAssert extends AbstractAssert<PutObjectResultAssert,
     @VisibleForTesting
     private Failures failures = Failures.instance();
 
-    protected PutObjectResultAssert(PutObjectResult actual) {
-        super(actual, PutObjectResultAssert.class);
+    protected OwnerAssert(Owner actual) {
+        super(actual, OwnerAssert.class);
     }
 
-    public PutObjectResultAssert hasETag(String expected) {
+    public OwnerAssert hasDisplayName(String expected) {
         objects.assertNotNull(info, actual);
-        if (!areEqual(actual.getETag(), expected))
-            throw failures.failure(info, shouldHaveETag(actual, expected, actual.getETag()));
-        return myself;
-    }
-
-    public PutObjectResultAssert hasContentMd5(String expected) {
-        objects.assertNotNull(info, actual);
-        if (!areEqual(actual.getContentMd5(), expected))
-            throw failures.failure(info, shouldHaveContentMd5(actual, expected));
-        return myself;
+        if (!areEqual(actual.getDisplayName(), expected))
+            throw failures.failure(info, shouldHaveDisplayName(actual, expected, actual.getDisplayName()));
+        return null;
     }
 }

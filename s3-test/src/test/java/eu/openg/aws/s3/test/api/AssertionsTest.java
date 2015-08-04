@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package eu.openg.aws.s3.test;
+package eu.openg.aws.s3.test.api;
 
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.Owner;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
-import eu.openg.aws.s3.test.api.Assertions;
 import org.junit.Test;
 
 import static eu.openg.aws.s3.test.api.Assertions.assertThat;
@@ -29,16 +30,29 @@ import static org.mockito.Mockito.when;
 public class AssertionsTest {
 
     @Test
-    public void assertionsAreStaticAccessOnly() throws IllegalAccessException, InstantiationException {
-        org.assertj.core.api.Assertions.assertThatThrownBy(Assertions.class::newInstance)
-                .isInstanceOf(IllegalAccessException.class);
+    public void createAssertions() {
+        new Assertions();
+    }
+
+    @Test
+    public void incorrectBucketName() {
+        assertThatThrownBy(() -> assertThat(mock(Bucket.class)).hasName("test"))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("have name");
+    }
+
+    @Test
+    public void incorrectOwnerDisplayName() {
+        assertThatThrownBy(() -> assertThat(mock(Owner.class)).hasDisplayName("test"))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("have displayName");
     }
 
     @Test
     public void missingPutObjectResultETag() {
-        assertThatThrownBy(() -> assertThat(mock(PutObjectResult.class)).hasETag())
+        assertThatThrownBy(() -> assertThat(mock(PutObjectResult.class)).hasETag("test"))
                 .isInstanceOf(AssertionError.class)
-                .hasMessageContaining("Expecting ETag not to be null");
+                .hasMessageContaining("have ETag");
     }
 
     @Test

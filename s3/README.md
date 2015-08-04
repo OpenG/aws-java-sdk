@@ -14,7 +14,7 @@ Name            | Description
 ----------------|------------------------------------------------------------------------------------------
 doesBucketExist | Checks if the specified bucket exists
 listBuckets     | Returns a list of all Amazon S3 buckets that the authenticated sender of the request owns
-getBucket       | Returns Optional of the specified Bucket
+getBucket       | Returns interface object for the specified Bucket
 createBucket    | Creates a new Amazon S3 bucket with the specified name in the default (US) region
 deleteBucket    | Deletes the specified bucket
 
@@ -32,11 +32,13 @@ Provides an interface for manipulating objects in Amazon S3 Bucket.
 
 ### Methods
 
-Name            | Description
-----------------|------------------------------------------------------------------------------------
-getObject       | Gets the object stored in current Amazon S3 bucket under the specified key
-putObject       | Uploads the specified file to current Amazon S3 bucket under the specified key name
-deleteObject    | Deletes the specified object from current Amazon S3 bucket
+Name              | Description
+------------------|-------------------------------------------------------------------------------------------------
+getName           | Gets the bucket name
+getObjectMetadata | Gets the metadata for the specified Amazon S3 object without actually fetching the object itself
+getObject         | Gets the object stored in Amazon S3 bucket under the specified key
+putObject         | Uploads the specified object to Amazon S3 bucket under the specified key name
+deleteObject      | Deletes the specified object from Amazon S3 bucket
 
 ### Example
 
