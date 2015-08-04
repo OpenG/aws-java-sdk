@@ -50,9 +50,9 @@ public class AssertionsTest {
 
     @Test
     public void missingPutObjectResultETag() {
-        assertThatThrownBy(() -> assertThat(mock(PutObjectResult.class)).hasETag())
+        assertThatThrownBy(() -> assertThat(mock(PutObjectResult.class)).hasETag("test"))
                 .isInstanceOf(AssertionError.class)
-                .hasMessageContaining("Expecting ETag not to be null");
+                .hasMessageContaining("have ETag");
     }
 
     @Test

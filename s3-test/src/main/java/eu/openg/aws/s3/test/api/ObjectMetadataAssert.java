@@ -38,11 +38,6 @@ public class ObjectMetadataAssert extends AbstractAssert<ObjectMetadataAssert, O
         return myself;
     }
 
-    public ObjectMetadataAssert containsKey(String key) {
-        maps.assertContainsKeys(info, actual.getRawMetadata(), key);
-        return myself;
-    }
-
     public ObjectMetadataAssert containsUserEntry(String key, String value) {
         maps.assertContains(info, actual.getUserMetadata(), array(entry(key, value)));
         return myself;

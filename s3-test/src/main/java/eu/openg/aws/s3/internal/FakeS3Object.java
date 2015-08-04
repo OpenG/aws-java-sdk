@@ -22,31 +22,73 @@ import com.amazonaws.services.s3.model.S3Object;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.time.Clock;
+import java.util.Date;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.amazonaws.services.s3.Headers.ETAG;
+import static com.amazonaws.util.Base64.encodeAsString;
 import static com.amazonaws.util.IOUtils.toByteArray;
-import static com.amazonaws.util.Md5Utils.md5AsBase64;
+import static com.amazonaws.util.Md5Utils.computeMD5Hash;
+import static org.apache.commons.codec.binary.Hex.encodeHex;
 
 class FakeS3Object {
+
+    private final Clock clock;
 
     private final S3Object object;
     private byte[] content;
 
-    FakeS3Object(S3Object object) {
+    private String md5;
+
+    FakeS3Object(S3Object object, Clock clock) {
+        this.clock = clock;
+        this.object = object;
+        setContent(object.getObjectContent());
+        updateMetadata(object.getObjectMetadata());
+    }
+
+    private void setContent(InputStream content) {
         try {
-            this.object = object;
-            this.content = toByteArray(object.getObjectContent());
-            updateMetadata(object.getObjectMetadata());
+            this.content = toByteArray(content);
+            updateContentMetadata(this.content);
         } catch (IOException e) {
             throw new AmazonClientException(e);
         }
     }
 
-    String getMd5() {
-        return md5AsBase64(content);
+    private void updateContentMetadata(byte[] content) {
+        ObjectMetadata metadata = object.getObjectMetadata();
+        setMd5(computeMD5Hash(content));
+        metadata.setContentType("text/plain");
+        metadata.setContentLength(content.length);
+        metadata.setLastModified(Date.from(clock.instant()));
     }
 
-    ObjectMetadata getMetadata() {
-        return object.getObjectMetadata();
+    private void updateMetadata(ObjectMetadata metadata) {
+        metadata.setHeader("Accept-Ranges", "bytes");
+        metadata.setUserMetadata(serializeUserMetadata(metadata.getUserMetadata()));
+    }
+
+    private static Map<String, String> serializeUserMetadata(Map<String, String> metadata) {
+        return metadata.entrySet().stream().collect(Collectors.toMap(
+                entry -> entry.getKey().toLowerCase(),
+                Map.Entry::getValue));
+    }
+
+    String getMd5() {
+        return md5;
+    }
+
+    private void setMd5(byte[] md5) {
+        this.md5 = encodeAsString(md5);
+        object.getObjectMetadata().setHeader(ETAG, new String(encodeHex(md5)));
+    }
+
+    String getETag() {
+        return object.getObjectMetadata().getETag();
     }
 
     S3Object toS3Object() {
@@ -54,7 +96,7 @@ class FakeS3Object {
         return object;
     }
 
-    private void updateMetadata(ObjectMetadata metadata) {
-        metadata.setContentLength(content.length);
+    ObjectMetadata getMetadata() {
+        return object.getObjectMetadata();
     }
 }

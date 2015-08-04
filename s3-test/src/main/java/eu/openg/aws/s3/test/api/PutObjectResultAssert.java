@@ -38,10 +38,10 @@ public class PutObjectResultAssert extends AbstractAssert<PutObjectResultAssert,
         super(actual, PutObjectResultAssert.class);
     }
 
-    public PutObjectResultAssert hasETag() {
+    public PutObjectResultAssert hasETag(String expected) {
         objects.assertNotNull(info, actual);
-        if (actual.getETag() == null)
-            throw failures.failure(info, shouldHaveETag());
+        if (!areEqual(actual.getETag(), expected))
+            throw failures.failure(info, shouldHaveETag(actual, expected, actual.getETag()));
         return myself;
     }
 

@@ -19,13 +19,14 @@ package eu.openg.aws.s3.internal;
 import com.amazonaws.services.s3.internal.AmazonS3ExceptionBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.amazonaws.services.s3.internal.Constants.*;
 import static com.amazonaws.util.BinaryUtils.toBase64;
-import static eu.openg.aws.s3.internal.AmazonS3FakeUtils.createExtendedId;
-import static eu.openg.aws.s3.internal.AmazonS3FakeUtils.createId;
+import static eu.openg.aws.s3.internal.AmazonS3Fake.createExtendedId;
 
 class FakeExceptionBuilder {
 
@@ -79,7 +80,7 @@ class FakeExceptionBuilder {
             String message, String errorCode, int statusCode, Map<String, String> additionalDetails
     ) {
         AmazonS3ExceptionBuilder builder = new AmazonS3ExceptionBuilder();
-        builder.setRequestId(createId());
+        builder.setRequestId(new BigInteger(80, new SecureRandom()).toString(32));
         builder.setErrorCode(errorCode);
         builder.setErrorMessage(message);
         builder.setStatusCode(statusCode);

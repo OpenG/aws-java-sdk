@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,12 +33,17 @@ import java.util.Date;
 
 import static com.amazonaws.AmazonServiceException.ErrorType.Client;
 import static eu.openg.aws.s3.test.api.Assertions.assertThat;
+import static java.lang.Thread.currentThread;
 import static org.assertj.core.api.S3ThrowableAssert.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
 
     private static final String OBJECT_NAME = "new_object";
+
+    private static final String FIXTURE_NAME = "fixtures/testFile.txt";
+
+    private static final File FIXTURE = new File(getResource(FIXTURE_NAME).getFile());
 
     @Before
     public void createTestBucket() throws Exception {
@@ -48,20 +52,18 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
 
     @Test
     public void putObjectToAMissingBucket() {
-        assertThatNoSuchBucketExists(() ->
-                s3.putObject("missing_bucket", OBJECT_NAME, getResourceAsFile("fixtures/testFile.txt")));
+        assertThatNoSuchBucketExists(() -> s3.putObject("missing_bucket", OBJECT_NAME, FIXTURE));
     }
 
     @Test
     public void putObjectToOtherOwnersBucket() {
-        assertThatAllAccessIsDisabled(() ->
-                s3.putObject("existing_bucket", OBJECT_NAME, getResourceAsFile("fixtures/testFile.txt")));
+        assertThatAllAccessIsDisabled(() -> s3.putObject("existing_bucket", OBJECT_NAME, FIXTURE));
     }
 
     @Test
     public void putObjectToABucket() {
-        assertThat(s3.putObject(BUCKET_NAME, OBJECT_NAME, getResourceAsFile("fixtures/testFile.txt")))
-                .hasETag()
+        assertThat(s3.putObject(BUCKET_NAME, OBJECT_NAME, FIXTURE))
+                .hasETag("c6b0eaa7399bc30123c429c09cc2dad8")
                 .hasContentMd5("xrDqpzmbwwEjxCnAnMLa2A==");
     }
 
@@ -74,7 +76,7 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
         }});
         assertThat(s3.getObjectMetadata(BUCKET_NAME, OBJECT_NAME))
                 .containsUserEntry("test", "value")
-                .containsUserEntry("someValue", "withCamelCase")
+                .containsUserEntry("somevalue", "withCamelCase")
                 .containsUserEntry("and_another", "with_underscores");
     }
 
@@ -99,21 +101,20 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
 
     @Test
     public void getObjectFromABucket() throws IOException {
-        File file = getResourceAsFile("fixtures/testFile.txt");
         Instant addedTime = LocalDateTime.of(2015, 9, 10, 6, 15).toInstant(ZoneOffset.UTC);
         when(clock.instant()).thenReturn(addedTime);
 
-        s3.putObject(BUCKET_NAME, OBJECT_NAME, file);
+        s3.putObject(BUCKET_NAME, OBJECT_NAME, FIXTURE);
         S3Object object = s3.getObject(BUCKET_NAME, OBJECT_NAME);
 
         assertThat(object)
                 .hasKey(OBJECT_NAME)
                 .hasBucketName(BUCKET_NAME)
-                .hasSameContentAs(new FileInputStream(file));
+                .hasSameContentAs(new FileInputStream(FIXTURE));
 
         assertThat(object.getObjectMetadata())
                 .containsEntry("Accept-Ranges", "bytes")
-                .containsKey("ETag")
+                .containsEntry("ETag", "c6b0eaa7399bc30123c429c09cc2dad8")
                 .containsEntry("Last-Modified", Date.from(addedTime))
                 .containsEntry("Content-Length", 29l)
                 .containsEntry("Content-Type", "text/plain");
@@ -132,7 +133,7 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
 
     @Test
     public void deleteObjectFromABucket() {
-        s3.putObject(BUCKET_NAME, OBJECT_NAME, getResourceAsFile("fixtures/testFile.txt"));
+        s3.putObject(BUCKET_NAME, OBJECT_NAME, FIXTURE);
         assertThat(s3.getObject(BUCKET_NAME, OBJECT_NAME)).isNotNull();
 
         s3.deleteObject(BUCKET_NAME, OBJECT_NAME);
@@ -140,19 +141,11 @@ public class AmazonS3FakeObjectTest extends AmazonS3FakeTest {
         assertThatThrownBy(() -> s3.getObject(BUCKET_NAME, OBJECT_NAME));
     }
 
-    private File getResourceAsFile(String name) {
-        try {
-            return new File(getResource(name).toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private InputStream getResourceAsStream(String name) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+        return currentThread().getContextClassLoader().getResourceAsStream(name);
     }
 
-    private URL getResource(String name) {
-        return Thread.currentThread().getContextClassLoader().getResource(name);
+    private static URL getResource(String name) {
+        return currentThread().getContextClassLoader().getResource(name);
     }
 }

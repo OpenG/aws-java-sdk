@@ -21,20 +21,22 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.openg.aws.s3.internal.AmazonS3FakeUtils.createId;
 import static eu.openg.aws.s3.internal.FakeExceptionBuilder.buildNoSuchKeyException;
-import static org.apache.commons.codec.binary.Hex.encodeHexString;
 
 class FakeBucketsContainer {
+
+    private final Clock clock;
 
     private final Bucket bucket;
     private final Map<String, FakeS3Object> objects = new HashMap<>();
 
-    FakeBucketsContainer(Bucket bucket) {
+    FakeBucketsContainer(Bucket bucket, Clock clock) {
         this.bucket = bucket;
+        this.clock = clock;
     }
 
     ObjectMetadata getObjectMetadata(String key) {
@@ -52,17 +54,18 @@ class FakeBucketsContainer {
     }
 
     PutObjectResult putObject(S3Object object) {
-        return putObject(object.getKey(), new FakeS3Object(object));
+        object.setBucketName(bucket.getName());
+        return putFakeObject(object.getKey(), new FakeS3Object(object, clock));
     }
 
-    private PutObjectResult putObject(String key, FakeS3Object object) {
+    private PutObjectResult putFakeObject(String key, FakeS3Object object) {
         objects.put(key, object);
         return buildPutObjectResult(object);
     }
 
     private PutObjectResult buildPutObjectResult(FakeS3Object object) {
         PutObjectResult result = new PutObjectResult();
-        result.setETag(encodeHexString(createId().getBytes()));
+        result.setETag(object.getETag());
         result.setContentMd5(object.getMd5());
         return result;
     }

@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,11 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.amazonaws.services.s3.Headers.ETAG;
-import static eu.openg.aws.s3.internal.AmazonS3FakeUtils.createExtendedId;
-import static eu.openg.aws.s3.internal.AmazonS3FakeUtils.createId;
 import static eu.openg.aws.s3.internal.FakeExceptionBuilder.*;
-import static org.apache.commons.codec.binary.Hex.encodeHexString;
 
 public class AmazonS3Fake extends AbstractAmazonS3 {
 
@@ -44,7 +42,10 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
     private final Clock clock;
 
     private final Map<String, FakeBucketsContainer> buckets = new HashMap<>();
-    private final Map<String, S3Object> objects = new HashMap<>();
+
+    static String createExtendedId() {
+        return new BigInteger(320, new SecureRandom()).toString(32);
+    }
 
     public AmazonS3Fake(Clock clock) {
         this.clock = clock;
@@ -81,7 +82,7 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         Bucket bucket = new Bucket(bucketName);
         bucket.setOwner(OWNER);
         bucket.setCreationDate(Date.from(clock.instant()));
-        buckets.put(bucketName, new FakeBucketsContainer(bucket));
+        buckets.put(bucketName, new FakeBucketsContainer(bucket, clock));
     }
 
     public ObjectMetadata getObjectMetadata(String bucketName, String key) {
@@ -114,24 +115,15 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
 
     @Override
     public PutObjectResult putObject(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
-        return getBucketsContainer(bucketName).putObject(buildS3Object(bucketName, key, input, metadata));
+        return getBucketsContainer(bucketName).putObject(buildS3Object(key, input, metadata));
     }
 
-    private S3Object buildS3Object(String bucketName, String key, InputStream input, ObjectMetadata metadata) {
+    private S3Object buildS3Object(String key, InputStream input, ObjectMetadata metadata) {
         S3Object object = new S3Object();
-        object.setBucketName(bucketName);
         object.setKey(key);
         object.setObjectContent(input);
         object.setObjectMetadata(metadata);
-        fillSystemMetadata(metadata);
         return object;
-    }
-
-    private void fillSystemMetadata(ObjectMetadata metadata) {
-        metadata.setHeader("Accept-Ranges", "bytes");
-        metadata.setHeader(ETAG, encodeHexString(createId().getBytes()));
-        metadata.setLastModified(Date.from(clock.instant()));
-        metadata.setContentType("text/plain");
     }
 
     @Override
