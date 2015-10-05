@@ -16,5 +16,33 @@
 
 package eu.openg.aws.sns.internal;
 
+import com.amazonaws.services.sns.model.CreateTopicResult;
+
+import static eu.openg.aws.sns.internal.SNSExceptionBuilder.buildAuthorizationException;
+import static eu.openg.aws.sns.internal.SNSExceptionBuilder.buildInvalidParameterException;
+
 public class AmazonSNSFake extends AbstractAmazonSNS {
+
+    private final boolean authorized;
+
+    public AmazonSNSFake(boolean authorized) {
+        this.authorized = authorized;
+    }
+
+    public AmazonSNSFake() {
+        this(true);
+    }
+
+    @Override
+    public CreateTopicResult createTopic(String name) {
+        if (!authorized)
+            throw buildAuthorizationException(name);
+        if (!isValidTopicName(name))
+            throw buildInvalidParameterException(name);
+        return new CreateTopicResult().withTopicArn("arn:aws:sns:us-east-1:12345:" + name);
+    }
+
+    private boolean isValidTopicName(String name) {
+        return !name.contains(" ");
+    }
 }

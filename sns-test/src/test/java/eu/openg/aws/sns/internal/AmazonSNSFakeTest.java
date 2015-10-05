@@ -17,14 +17,55 @@
 package eu.openg.aws.sns.internal;
 
 import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.model.AuthorizationErrorException;
+import com.amazonaws.services.sns.model.InvalidParameterException;
+import org.junit.Before;
 import org.junit.Test;
 
+import static org.assertj.core.api.AWSThrowableAssert.assertThatThrownBy;
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
 public class AmazonSNSFakeTest {
 
+    private AmazonSNS sns;
+
+    @Before
+    public void prepareFakeService() {
+        sns = new AmazonSNSFake();
+    }
+
     @Test
     public void fakeHasAllAmazonSNSMethods() {
         assertThat(new AmazonSNSFake()).isInstanceOf(AmazonSNS.class);
+    }
+
+    @Test
+    public void createTopicWithoutAuthorization() {
+        sns = new AmazonSNSFake(false);
+        assertThatThrownBy(() -> sns.createTopic("test"))
+                .isInstanceOf(AuthorizationErrorException.class)
+                .hasRequestId()
+                .hasErrorCode("AuthorizationError")
+                .hasErrorMessage("User: arn:aws:iam::0:user/test " +
+                        "is not authorized to perform: SNS:CreateTopic " +
+                        "on resource: arn:aws:sns:us-east-1:0:test")
+                .hasStatusCode(403)
+                .hasServiceName("AmazonSNS");
+    }
+
+    @Test
+    public void createTopicWithInvalidName() {
+        assertThatThrownBy(() -> sns.createTopic("test topic"))
+                .isInstanceOf(InvalidParameterException.class)
+                .hasRequestId()
+                .hasErrorCode("InvalidParameter")
+                .hasErrorMessage("Invalid parameter: test topic")
+                .hasStatusCode(400)
+                .hasServiceName("AmazonSNS");
+    }
+
+    @Test
+    public void createTopic() {
+        assertThat(sns.createTopic("test").getTopicArn()).isEqualTo("arn:aws:sns:us-east-1:12345:test");
     }
 }

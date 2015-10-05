@@ -15,7 +15,8 @@
  */
 
 dependencies {
-    compile "com.amazonaws:aws-java-sdk-sns:$awsVersion"
+    compile "com.amazonaws:aws-java-sdk-sns:$awsVersion",
+            'org.assertj:assertj-core:3.1.0'
 }
 
 publishing.publications {
