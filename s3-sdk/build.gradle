@@ -15,6 +15,7 @@
  */
 
 dependencies {
+    compile "com.amazonaws:aws-java-sdk-s3:$awsVersion"
     testCompile project(':s3-test')
 }
 

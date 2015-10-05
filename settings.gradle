@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-include 's3-sdk'
-include 's3-test'
+include 's3-sdk', 's3-test'
+include 'sns-test'

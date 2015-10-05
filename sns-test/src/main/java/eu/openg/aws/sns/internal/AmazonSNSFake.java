@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile "com.amazonaws:aws-java-sdk-s3:$awsVersion",
-            'org.assertj:assertj-core:3.1.0'
-}
+package eu.openg.aws.sns.internal;
 
-publishing.publications {
-    mavenJava(MavenPublication) {
-        from components.java
-    }
+public class AmazonSNSFake extends AbstractAmazonSNS {
 }

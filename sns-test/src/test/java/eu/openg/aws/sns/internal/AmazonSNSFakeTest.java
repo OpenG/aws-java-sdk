@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-dependencies {
-    compile "com.amazonaws:aws-java-sdk-s3:$awsVersion",
-            'org.assertj:assertj-core:3.1.0'
-}
+package eu.openg.aws.sns.internal;
 
-publishing.publications {
-    mavenJava(MavenPublication) {
-        from components.java
+import com.amazonaws.services.sns.AmazonSNS;
+import org.junit.Test;
+
+import static org.assertj.core.api.StrictAssertions.assertThat;
+
+public class AmazonSNSFakeTest {
+
+    @Test
+    public void fakeHasAllAmazonSNSMethods() {
+        assertThat(new AmazonSNSFake()).isInstanceOf(AmazonSNS.class);
     }
 }
