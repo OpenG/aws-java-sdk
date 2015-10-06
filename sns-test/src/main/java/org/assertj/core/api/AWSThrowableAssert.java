@@ -53,6 +53,11 @@ public class AWSThrowableAssert extends AbstractThrowableAssert<AWSThrowableAsse
         return myself;
     }
 
+    public AWSThrowableAssert hasErrorType(AmazonServiceException.ErrorType errorType) {
+        Assertions.assertThat(actual.getErrorType()).isEqualTo(errorType);
+        return myself;
+    }
+
     public AWSThrowableAssert hasServiceName(String serviceName) {
         Assertions.assertThat(actual.getServiceName()).isEqualTo(serviceName);
         return myself;

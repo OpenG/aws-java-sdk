@@ -25,7 +25,7 @@ import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
 
-import static eu.openg.aws.s3.internal.FakeExceptionBuilder.buildNoSuchKeyException;
+import static eu.openg.aws.s3.internal.S3ExceptionBuilder.buildNoSuchKeyException;
 
 class FakeBucketsContainer {
 

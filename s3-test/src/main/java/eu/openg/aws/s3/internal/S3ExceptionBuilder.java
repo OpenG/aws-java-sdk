@@ -28,7 +28,7 @@ import static com.amazonaws.services.s3.internal.Constants.*;
 import static com.amazonaws.util.BinaryUtils.toBase64;
 import static eu.openg.aws.s3.internal.AmazonS3Fake.createExtendedId;
 
-class FakeExceptionBuilder {
+class S3ExceptionBuilder {
 
     static AmazonS3Exception buildAllAccessDisabledException() {
         return buildException(
@@ -88,7 +88,6 @@ class FakeExceptionBuilder {
         builder.setAdditionalDetails(additionalDetails);
         builder.addAdditionalDetail("Error", builder.getExtendedRequestId());
         builder.setErrorResponseXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-
         return builder.build();
     }
 }

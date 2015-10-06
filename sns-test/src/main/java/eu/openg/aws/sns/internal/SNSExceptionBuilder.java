@@ -21,6 +21,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.sns.model.AuthorizationErrorException;
 import com.amazonaws.services.sns.model.InvalidParameterException;
 
+import static com.amazonaws.AmazonServiceException.ErrorType.Client;
 import static java.util.UUID.randomUUID;
 
 class SNSExceptionBuilder {
@@ -30,22 +31,35 @@ class SNSExceptionBuilder {
                 "User: arn:aws:iam::0:user/test is not authorized " +
                         "to perform: SNS:CreateTopic " +
                         "on resource: arn:aws:sns:us-east-1:0:" + topic);
-        assignCommonExceptionValue(exception);
+        assignCommonExceptionValues(exception);
         exception.setErrorCode("AuthorizationError");
         exception.setStatusCode(403);
         return exception;
     }
 
-    static AmazonClientException buildInvalidParameterException(String topic) {
-        final AmazonServiceException exception = new InvalidParameterException("Invalid parameter: " + topic);
-        assignCommonExceptionValue(exception);
+    static AmazonClientException buildInvalidParameterException(String reason) {
+        final AmazonServiceException exception = new InvalidParameterException("Invalid parameter: " + reason);
+        assignCommonExceptionValues(exception);
         exception.setErrorCode("InvalidParameter");
         exception.setStatusCode(400);
         return exception;
     }
 
-    private static void assignCommonExceptionValue(AmazonServiceException exception) {
+    static AmazonClientException buildInvalidArnParameterException(String reason) {
+        return buildInvalidParameterException("TopicArn Reason: " + reason);
+    }
+
+    static AmazonServiceException buildAmazonServiceException(String message, String errorCode, int statusCode) {
+        final AmazonServiceException exception = new AmazonServiceException(message);
+        assignCommonExceptionValues(exception);
+        exception.setErrorCode(errorCode);
+        exception.setStatusCode(statusCode);
+        return exception;
+    }
+
+    private static void assignCommonExceptionValues(AmazonServiceException exception) {
         exception.setRequestId(randomUUID().toString());
         exception.setServiceName("AmazonSNS");
+        exception.setErrorType(Client);
     }
 }
