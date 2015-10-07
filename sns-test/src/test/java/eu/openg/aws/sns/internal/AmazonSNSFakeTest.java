@@ -19,6 +19,7 @@ package eu.openg.aws.sns.internal;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.AuthorizationErrorException;
 import com.amazonaws.services.sns.model.InvalidParameterException;
+import com.amazonaws.services.sns.model.NotFoundException;
 import org.assertj.core.api.AWSThrowableAssert;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.Before;
@@ -144,6 +145,30 @@ public class AmazonSNSFakeTest {
                 .hasErrorCode("InvalidClientTokenId")
                 .hasErrorMessage("No account found for the given parameters")
                 .hasStatusCode(403);
+    }
+
+    @Test
+    public void publishWithoutATopic() {
+        assertSNSParamThrownBy(() -> sns.publish("arn:aws:sns:us-east-1:12345", "message"))
+                .hasErrorMessage("Invalid parameter: TopicArn");
+        assertSNSParamThrownBy(() -> sns.publish("arn:aws:sns:us-east-1:12345:", "message"))
+                .hasErrorMessage("Invalid parameter: TopicArn");
+    }
+
+    @Test
+    public void publishToNonExistentTopic() {
+        assertSNSThrownBy(() -> sns.publish("arn:aws:sns:us-east-1:12345:a", "message"))
+                .isInstanceOf(NotFoundException.class)
+                .hasErrorCode("NotFound")
+                .hasErrorMessage("Topic does not exist")
+                .hasStatusCode(404);
+    }
+
+    @Test
+    public void publishToACreatedTopic() {
+        assertThat(sns.publish(sns.createTopic("test").getTopicArn(), "message").getMessageId()).isNotNull();
+        sns = new AmazonSNSFake("54321");
+        assertThat(sns.publish(sns.createTopic("test").getTopicArn(), "message").getMessageId()).isNotEmpty();
     }
 
     private static AWSThrowableAssert assertSNSParamThrownBy(ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {

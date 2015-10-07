@@ -20,13 +20,22 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.sns.model.AuthorizationErrorException;
 import com.amazonaws.services.sns.model.InvalidParameterException;
+import com.amazonaws.services.sns.model.NotFoundException;
 
 import static com.amazonaws.AmazonServiceException.ErrorType.Client;
 import static java.util.UUID.randomUUID;
 
 class SNSExceptionBuilder {
 
-    static AmazonClientException buildAuthorizationException(String topic) {
+    static AmazonServiceException buildAmazonServiceException(String message, String errorCode, int statusCode) {
+        final AmazonServiceException exception = new AmazonServiceException(message);
+        assignCommonExceptionValues(exception);
+        exception.setErrorCode(errorCode);
+        exception.setStatusCode(statusCode);
+        return exception;
+    }
+
+    static AmazonClientException buildAuthorizationErrorException(String topic) {
         final AmazonServiceException exception = new AuthorizationErrorException(
                 "User: arn:aws:iam::0:user/test is not authorized " +
                         "to perform: SNS:CreateTopic " +
@@ -49,11 +58,11 @@ class SNSExceptionBuilder {
         return buildInvalidParameterException("TopicArn Reason: " + reason);
     }
 
-    static AmazonServiceException buildAmazonServiceException(String message, String errorCode, int statusCode) {
-        final AmazonServiceException exception = new AmazonServiceException(message);
+    static NotFoundException buildNotFoundException(String message) {
+        final NotFoundException exception = new NotFoundException(message);
         assignCommonExceptionValues(exception);
-        exception.setErrorCode(errorCode);
-        exception.setStatusCode(statusCode);
+        exception.setErrorCode("NotFound");
+        exception.setStatusCode(404);
         return exception;
     }
 

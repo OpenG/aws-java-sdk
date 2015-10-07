@@ -20,12 +20,18 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.sns.model.CreateTopicResult;
 import com.amazonaws.services.sns.model.PublishResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static eu.openg.aws.sns.internal.SNSExceptionBuilder.*;
+import static java.util.UUID.randomUUID;
 
 public class AmazonSNSFake extends AbstractAmazonSNS {
 
     private final boolean authorized;
     private final String clientTokenId;
+
+    private List<String> topics = new ArrayList<>();
 
     public AmazonSNSFake(String clientTokenId, boolean authorized) {
         this.authorized = authorized;
@@ -39,10 +45,11 @@ public class AmazonSNSFake extends AbstractAmazonSNS {
     @Override
     public CreateTopicResult createTopic(String name) {
         if (!authorized)
-            throw buildAuthorizationException(name);
+            throw buildAuthorizationErrorException(name);
         if (!isValidTopicName(name))
             throw buildInvalidParameterException(name);
-        return new CreateTopicResult().withTopicArn("arn:aws:sns:us-east-1:12345:" + name);
+        topics.add(name);
+        return new CreateTopicResult().withTopicArn("arn:aws:sns:us-east-1:" + clientTokenId + ":" + name);
     }
 
     private boolean isValidTopicName(String name) {
@@ -54,6 +61,8 @@ public class AmazonSNSFake extends AbstractAmazonSNS {
         final SNSTopicArn arn = new SNSTopicArn(topicArn);
         if (!clientTokenId.equals(arn.getClientTokenId()))
             throw buildAmazonServiceException("No account found for the given parameters", "InvalidClientTokenId", 403);
-        return null;
+        if (!topics.contains(arn.getTopic()))
+            throw buildNotFoundException("Topic does not exist");
+        return new PublishResult().withMessageId(randomUUID().toString());
     }
 }

@@ -51,6 +51,7 @@ class SNSTopicArn {
     private String service;
     private String region;
     private String clientTokenId;
+    private String topic;
 
     SNSTopicArn(String topicArn) {
         final Matcher matcher = PATTERN.matcher(topicArn);
@@ -65,7 +66,9 @@ class SNSTopicArn {
                 setRegion(matcher.group(4).substring(1));
             if (matcher.group(5) != null)
                 setClientTokenId(matcher.group(5).substring(1));
-            if (service == null || region == null)
+            if (matcher.group(6) != null)
+                setTopic(matcher.group(6).substring(1));
+            if (service == null || region == null || topic == null)
                 throw buildInvalidParameterException("TopicArn");
         } else
             throw buildInvalidParameterException("TopicArn");
@@ -95,6 +98,14 @@ class SNSTopicArn {
     public void setClientTokenId(String clientTokenId) {
         checkAgainstARNSpecification(clientTokenId);
         this.clientTokenId = clientTokenId;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     private static void checkAgainstARNSpecification(String token) {
