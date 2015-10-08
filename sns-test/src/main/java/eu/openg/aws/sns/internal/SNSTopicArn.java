@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static eu.openg.aws.sns.internal.SNSExceptionBuilder.buildInvalidArnParameterException;
-import static eu.openg.aws.sns.internal.SNSExceptionBuilder.buildInvalidParameterException;
+import static eu.openg.aws.sns.internal.SNSExceptionBuilder.newInvalidArnParameterException;
+import static eu.openg.aws.sns.internal.SNSExceptionBuilder.newInvalidParameterException;
 
 class SNSTopicArn {
 
@@ -57,7 +57,7 @@ class SNSTopicArn {
         final Matcher matcher = PATTERN.matcher(topicArn);
         if (matcher.matches()) {
             if (!"arn".equals(matcher.group(1)))
-                throw buildInvalidArnParameterException(topicArn + " does not start with arn");
+                throw newInvalidArnParameterException(topicArn + " does not start with arn").build();
             if (matcher.group(2) != null)
                 validateProvider(matcher.group(2).substring(1), topicArn);
             if (matcher.group(3) != null)
@@ -69,14 +69,14 @@ class SNSTopicArn {
             if (matcher.group(6) != null)
                 setTopic(matcher.group(6).substring(1));
             if (service == null || region == null || topic == null)
-                throw buildInvalidParameterException("TopicArn");
+                throw newInvalidParameterException("TopicArn").build();
         } else
-            throw buildInvalidParameterException("TopicArn");
+            throw newInvalidParameterException("TopicArn").build();
     }
 
     private static void validateProvider(String provider, String arn) {
         if (!"aws".equals(provider))
-            throw buildInvalidArnParameterException(arn + " has invalid partition " + provider);
+            throw newInvalidArnParameterException(arn + " has invalid partition " + provider).build();
     }
 
     public void setService(String service) {
@@ -110,6 +110,6 @@ class SNSTopicArn {
 
     private static void checkAgainstARNSpecification(String token) {
         if (token.length() < 2)
-            throw buildInvalidArnParameterException(token + " does not conform to the ARN specification");
+            throw newInvalidArnParameterException(token + " does not conform to the ARN specification").build();
     }
 }

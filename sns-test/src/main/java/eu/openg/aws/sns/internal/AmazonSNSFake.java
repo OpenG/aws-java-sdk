@@ -275,9 +275,9 @@ public class AmazonSNSFake implements AmazonSNS {
     @Override
     public CreateTopicResult createTopic(String name) {
         if (!authorized)
-            throw buildAuthorizationErrorException(name);
+            throw newAuthorizationErrorException(name).build();
         if (!isValidTopicName(name))
-            throw buildInvalidParameterException(name);
+            throw newInvalidParameterException(name).build();
         topics.add(name);
         return new CreateTopicResult().withTopicArn("arn:aws:sns:us-east-1:" + clientTokenId + ":" + name);
     }
@@ -310,9 +310,13 @@ public class AmazonSNSFake implements AmazonSNS {
     public PublishResult publish(String topicArn, String message) throws AmazonClientException {
         final SNSTopicArn arn = new SNSTopicArn(topicArn);
         if (!clientTokenId.equals(arn.getClientTokenId()))
-            throw buildAmazonServiceException("No account found for the given parameters", "InvalidClientTokenId", 403);
+            throw newAmazonServiceException(
+                    "No account found for the given parameters",
+                    "InvalidClientTokenId",
+                    403
+            ).build();
         if (!topics.contains(arn.getTopic()))
-            throw buildNotFoundException("Topic does not exist");
+            throw newNotFoundException("Topic does not exist").build();
         return new PublishResult().withMessageId(randomUUID().toString());
     }
 

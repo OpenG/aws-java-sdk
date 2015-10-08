@@ -16,7 +16,6 @@
 
 package eu.openg.aws.sns.internal;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.sns.model.AuthorizationErrorException;
 import com.amazonaws.services.sns.model.InvalidParameterException;
@@ -27,48 +26,50 @@ import static java.util.UUID.randomUUID;
 
 class SNSExceptionBuilder {
 
-    static AmazonServiceException buildAmazonServiceException(String message, String errorCode, int statusCode) {
-        final AmazonServiceException exception = new AmazonServiceException(message);
-        assignCommonExceptionValues(exception);
-        exception.setErrorCode(errorCode);
-        exception.setStatusCode(statusCode);
-        return exception;
+    private final AmazonServiceException exception;
+
+    private SNSExceptionBuilder(AmazonServiceException exception, String errorCode, int statusCode) {
+        this.exception = exception;
+        this.exception.setErrorCode(errorCode);
+        this.exception.setStatusCode(statusCode);
     }
 
-    static AmazonClientException buildAuthorizationErrorException(String topic) {
-        final AmazonServiceException exception = new AuthorizationErrorException(
-                "User: arn:aws:iam::0:user/test is not authorized " +
-                        "to perform: SNS:CreateTopic " +
-                        "on resource: arn:aws:sns:us-east-1:0:" + topic);
-        assignCommonExceptionValues(exception);
-        exception.setErrorCode("AuthorizationError");
-        exception.setStatusCode(403);
-        return exception;
+    static SNSExceptionBuilder newAmazonServiceException(String message, String errorCode, int statusCode) {
+        return new SNSExceptionBuilder(new AmazonServiceException(message), errorCode, statusCode);
     }
 
-    static AmazonClientException buildInvalidParameterException(String reason) {
-        final AmazonServiceException exception = new InvalidParameterException("Invalid parameter: " + reason);
-        assignCommonExceptionValues(exception);
-        exception.setErrorCode("InvalidParameter");
-        exception.setStatusCode(400);
-        return exception;
+    static SNSExceptionBuilder newAuthorizationErrorException(String topic) {
+        return new SNSExceptionBuilder(
+                new AuthorizationErrorException(
+                        "User: arn:aws:iam::0:user/test is not authorized " +
+                                "to perform: SNS:CreateTopic " +
+                                "on resource: arn:aws:sns:us-east-1:0:" + topic),
+                "AuthorizationError",
+                403);
     }
 
-    static AmazonClientException buildInvalidArnParameterException(String reason) {
-        return buildInvalidParameterException("TopicArn Reason: " + reason);
+    static SNSExceptionBuilder newInvalidParameterException(String reason) {
+        return new SNSExceptionBuilder(
+                new InvalidParameterException("Invalid parameter: " + reason),
+                "InvalidParameter",
+                400);
     }
 
-    static NotFoundException buildNotFoundException(String message) {
-        final NotFoundException exception = new NotFoundException(message);
-        assignCommonExceptionValues(exception);
-        exception.setErrorCode("NotFound");
-        exception.setStatusCode(404);
-        return exception;
+    static SNSExceptionBuilder newInvalidArnParameterException(String reason) {
+        return newInvalidParameterException("TopicArn Reason: " + reason);
     }
 
-    private static void assignCommonExceptionValues(AmazonServiceException exception) {
+    static SNSExceptionBuilder newNotFoundException(String message) {
+        return new SNSExceptionBuilder(
+                new NotFoundException(message),
+                "NotFound",
+                404);
+    }
+
+    AmazonServiceException build() {
         exception.setRequestId(randomUUID().toString());
         exception.setServiceName("AmazonSNS");
         exception.setErrorType(Client);
+        return exception;
     }
 }
