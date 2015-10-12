@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-include 's3-sdk', 's3-test'
-include 'sns-sdk', 'sns-test'
+dependencies {
+    compile "com.amazonaws:aws-java-sdk-sns:$awsVersion"
+}
+
+publishing.publications {
+    mavenJava(MavenPublication) {
+        from components.java
+    }
+}

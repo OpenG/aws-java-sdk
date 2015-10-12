@@ -14,5 +14,25 @@
  * limitations under the License.
  */
 
-include 's3-sdk', 's3-test'
-include 'sns-sdk', 'sns-test'
+package eu.openg.aws.sns;
+
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.model.CreateTopicResult;
+
+public class SNSService {
+
+    private final AmazonSNS sns;
+
+    public SNSService(AmazonSNS sns) {
+        this.sns = sns;
+    }
+
+    public SNSService() {
+        this(new AmazonSNSClient());
+    }
+
+    public CreateTopicResult createTopic(String name) {
+        return sns.createTopic(name);
+    }
+}
