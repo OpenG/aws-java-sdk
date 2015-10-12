@@ -17,14 +17,14 @@
 package eu.openg.aws.sns.internal;
 
 import com.amazonaws.services.sns.AmazonSNS;
-import org.junit.Test;
+import org.junit.Before;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+public abstract class AbstractSNSFakeTest {
 
-public class AmazonSNSFakeTest extends AbstractSNSFakeTest {
+    protected AmazonSNS sns;
 
-    @Test
-    public void fakeHasAllAmazonSNSMethods() {
-        assertThat(new AmazonSNSFake("12345")).isInstanceOf(AmazonSNS.class);
+    @Before
+    public void prepareFakeService() {
+        sns = new AmazonSNSFake("12345");
     }
 }

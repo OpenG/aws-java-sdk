@@ -100,10 +100,6 @@ class SNSTopicArn {
         this.clientTokenId = clientTokenId;
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
     public void setTopic(String topic) {
         this.topic = topic;
     }

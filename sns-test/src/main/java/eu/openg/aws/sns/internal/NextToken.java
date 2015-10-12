@@ -16,15 +16,17 @@
 
 package eu.openg.aws.sns.internal;
 
-import com.amazonaws.services.sns.AmazonSNS;
-import org.junit.Test;
+import java.io.Serializable;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+class NextToken implements Serializable {
 
-public class AmazonSNSFakeTest extends AbstractSNSFakeTest {
+    private final int from;
 
-    @Test
-    public void fakeHasAllAmazonSNSMethods() {
-        assertThat(new AmazonSNSFake("12345")).isInstanceOf(AmazonSNS.class);
+    public NextToken(int from) {
+        this.from = from;
+    }
+
+    public int getFrom() {
+        return from;
     }
 }

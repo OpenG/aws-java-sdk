@@ -23,9 +23,14 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.*;
 
-import java.util.ArrayList;
+import java.io.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import static com.amazonaws.util.Base64.decode;
+import static com.amazonaws.util.Base64.encodeAsString;
 import static eu.openg.aws.sns.internal.SNSExceptionBuilder.*;
 import static java.util.UUID.randomUUID;
 
@@ -36,7 +41,7 @@ public class AmazonSNSFake implements AmazonSNS {
     private final boolean authorized;
     private final String clientTokenId;
 
-    private List<String> topics = new ArrayList<>();
+    private Collection<String> topics = new TreeSet<>();
 
     public AmazonSNSFake(String clientTokenId, boolean authorized) {
         this.authorized = authorized;
@@ -207,7 +212,52 @@ public class AmazonSNSFake implements AmazonSNS {
 
     @Override
     public ListTopicsResult listTopics() throws AmazonClientException {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+        return listTopics(0);
+    }
+
+    @Override
+    public ListTopicsResult listTopics(String nextToken) throws AmazonClientException {
+        return listTopics(restoreNextToken(nextToken).getFrom());
+    }
+
+    private ListTopicsResult listTopics(int skip) {
+        final ListTopicsResult result = new ListTopicsResult().withTopics(topics.stream()
+                .map(AmazonSNSFake::buildTopic)
+                .skip(skip)
+                .limit(100)
+                .collect(Collectors.toList()));
+        final int end = skip + 100;
+        if (topics.size() > end)
+            result.setNextToken(buildNextToken(end));
+        return result;
+    }
+
+    private static Topic buildTopic(String arn) {
+        return new Topic().withTopicArn(arn);
+    }
+
+    private String buildNextToken(int n) {
+        final NextToken token = new NextToken(n);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            try (ObjectOutputStream objOut = new ObjectOutputStream(out)) {
+                objOut.writeObject(token);
+                return encodeAsString(out.toByteArray());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private NextToken restoreNextToken(String token) {
+        try (ByteArrayInputStream in = new ByteArrayInputStream(decode(token))) {
+            try (ObjectInputStream objIn = new ObjectInputStream(in)) {
+                return (NextToken) objIn.readObject();
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -278,17 +328,13 @@ public class AmazonSNSFake implements AmazonSNS {
             throw newAuthorizationErrorException(name).build();
         if (!isValidTopicName(name))
             throw newInvalidParameterException(name).build();
-        topics.add(name);
-        return new CreateTopicResult().withTopicArn("arn:aws:sns:us-east-1:" + clientTokenId + ":" + name);
+        final Topic topic = new Topic().withTopicArn("arn:aws:sns:us-east-1:" + clientTokenId + ":" + name);
+        topics.add(topic.getTopicArn());
+        return new CreateTopicResult().withTopicArn(topic.getTopicArn());
     }
 
     private boolean isValidTopicName(String name) {
         return !name.contains(" ");
-    }
-
-    @Override
-    public ListTopicsResult listTopics(String nextToken) throws AmazonClientException {
-        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
@@ -315,7 +361,7 @@ public class AmazonSNSFake implements AmazonSNS {
                     "InvalidClientTokenId",
                     403
             ).build();
-        if (!topics.contains(arn.getTopic()))
+        if (!topics.contains(topicArn))
             throw newNotFoundException("Topic does not exist").build();
         return new PublishResult().withMessageId(randomUUID().toString());
     }

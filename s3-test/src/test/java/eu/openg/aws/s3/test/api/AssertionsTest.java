@@ -20,10 +20,11 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.Owner;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.Test;
 
 import static eu.openg.aws.s3.test.api.Assertions.assertThat;
-import static org.assertj.core.api.StrictAssertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,28 +38,24 @@ public class AssertionsTest {
     @Test
     public void incorrectBucketName() {
         assertThatThrownBy(() -> assertThat(mock(Bucket.class)).hasName("test"))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("have name");
     }
 
     @Test
     public void incorrectOwnerDisplayName() {
         assertThatThrownBy(() -> assertThat(mock(Owner.class)).hasDisplayName("test"))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("have displayName");
     }
 
     @Test
     public void missingPutObjectResultETag() {
         assertThatThrownBy(() -> assertThat(mock(PutObjectResult.class)).hasETag("test"))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("have ETag");
     }
 
     @Test
     public void incorrectPutObjectResultContentMd5() {
         assertThatThrownBy(() -> assertThat(mock(PutObjectResult.class)).hasContentMd5("test"))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("Expecting contentMd5 of");
     }
 
@@ -68,14 +65,12 @@ public class AssertionsTest {
         when(result.getContentMd5()).thenReturn("contentMd5");
 
         assertThatThrownBy(() -> assertThat(result).hasContentMd5(null))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("not to have ContentMd5 but had");
     }
 
     @Test
     public void incorrectS3ObjectKey() {
         assertThatThrownBy(() -> assertThat(mock(S3Object.class)).hasKey("key"))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("Expecting key of");
     }
 
@@ -85,14 +80,12 @@ public class AssertionsTest {
         when(object.getKey()).thenReturn("key");
 
         assertThatThrownBy(() -> assertThat(object).hasKey(null))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("not to have key but had");
     }
 
     @Test
     public void incorrectS3ObjectBucketName() {
         assertThatThrownBy(() -> assertThat(mock(S3Object.class)).hasBucketName("bucket"))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("Expecting bucketName of");
     }
 
@@ -102,7 +95,11 @@ public class AssertionsTest {
         when(object.getBucketName()).thenReturn("bucketName");
 
         assertThatThrownBy(() -> assertThat(object).hasBucketName(null))
-                .isInstanceOf(AssertionError.class)
                 .hasMessageContaining("not to have bucketName but had");
+    }
+
+    private AbstractThrowableAssert<?, ?> assertThatThrownBy(ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+        return org.assertj.core.api.Assertions.assertThatThrownBy(shouldRaiseThrowable)
+                .isInstanceOf(AssertionError.class);
     }
 }
