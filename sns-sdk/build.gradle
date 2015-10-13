@@ -16,6 +16,7 @@
 
 dependencies {
     compile "com.amazonaws:aws-java-sdk-sns:$awsVersion"
+    testCompile project(':sns-test')
 }
 
 publishing.publications {

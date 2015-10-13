@@ -18,10 +18,14 @@ package eu.openg.aws.sns;
 
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.CreateTopicResult;
+import eu.openg.aws.sns.internal.AmazonSNSFake;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.StrictAssertions.assertThatThrownBy;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -34,14 +38,34 @@ public class SNSServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        sns = mock(AmazonSNS.class);
+        sns = spy(new AmazonSNSFake("12345"));
         service = new SNSService(sns);
-
     }
 
     @Test
     public void createService() {
         assertThat(new SNSService()).isNotNull();
+    }
+
+    @Test
+    public void listTopics() {
+        service.listTopics();
+        verify(sns).listTopics();
+    }
+
+    @Test
+    public void whenFetchingFromExhaustedIteratorExceptionShouldBeThrown() {
+        assertThatThrownBy(() -> service.listTopics().next())
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void whenListingTopicsNextBatchIsQueriedAutomatically() {
+        for (int i = 0; i < 120; i++)
+            sns.createTopic("topic" + i);
+        assertThat(service.listTopics()).hasSize(120);
+        verify(sns).listTopics();
+        verify(sns).listTopics(anyString());
     }
 
     @Test
