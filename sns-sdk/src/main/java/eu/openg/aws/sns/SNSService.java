@@ -32,11 +32,15 @@ public class SNSService {
         this(new AmazonSNSClient());
     }
 
-    public SNSTopicIterator listTopics() {
-        return new SNSTopicIterator(sns);
+    public SNSTopics listTopics() {
+        return new SNSTopics(sns);
     }
 
     public CreateTopicResult createTopic(String name) {
         return sns.createTopic(name);
+    }
+
+    public void publish(String topicArn, String message) {
+        sns.publish(topicArn, message);
     }
 }

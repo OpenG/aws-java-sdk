@@ -49,13 +49,13 @@ public class SNSServiceTest {
 
     @Test
     public void listTopics() {
-        service.listTopics();
+        service.listTopics().iterator();
         verify(sns).listTopics();
     }
 
     @Test
     public void whenFetchingFromExhaustedIteratorExceptionShouldBeThrown() {
-        assertThatThrownBy(() -> service.listTopics().next())
+        assertThatThrownBy(() -> service.listTopics().iterator().next())
                 .isInstanceOf(NoSuchElementException.class);
     }
 
@@ -75,5 +75,12 @@ public class SNSServiceTest {
 
         assertThat(service.createTopic(TOPIC_NAME)).isEqualTo(result);
         verify(sns).createTopic(TOPIC_NAME);
+    }
+
+    @Test
+    public void publish() {
+        final String topicArn = sns.createTopic(TOPIC_NAME).getTopicArn();
+        service.publish(topicArn, "message");
+        verify(sns).publish(topicArn, "message");
     }
 }

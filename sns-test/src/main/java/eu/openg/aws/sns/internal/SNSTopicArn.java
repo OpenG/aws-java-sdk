@@ -32,7 +32,7 @@ class SNSTopicArn {
                     "(:[a-zA-Z0-9]*)?" + // Service
                     "(:[-a-zA-Z0-9]+)?" + // Region
                     "(:[a-zA-Z0-9]+)?" + // Account TokenId
-                    "(:[a-zA-Z0-9]+)?"); // Topic
+                    "(:[_a-zA-Z0-9]+)?"); // Topic
 
     private static final List<String> REGIONS = new ArrayList<>();
 
