@@ -15,13 +15,12 @@
  */
 
 dependencies {
-    testCompile project(':s3-test')
+    compile "com.amazonaws:aws-java-sdk-sns:$awsVersion"
+    testCompile project(':sns-test')
 }
 
 publishing.publications {
     mavenJava(MavenPublication) {
-        artifactId = 's3-sdk'
-
         from components.java
     }
 }

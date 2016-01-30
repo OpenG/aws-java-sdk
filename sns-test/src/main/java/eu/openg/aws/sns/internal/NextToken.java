@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-include 's3-sdk', 's3-test'
-include 'sns-sdk', 'sns-test'
+package eu.openg.aws.sns.internal;
+
+import java.io.Serializable;
+
+class NextToken implements Serializable {
+
+    private final int from;
+
+    public NextToken(int from) {
+        this.from = from;
+    }
+
+    public int getFrom() {
+        return from;
+    }
+}

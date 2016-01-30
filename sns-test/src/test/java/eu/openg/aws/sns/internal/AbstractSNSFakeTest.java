@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-include 's3-sdk', 's3-test'
-include 'sns-sdk', 'sns-test'
+package eu.openg.aws.sns.internal;
+
+import com.amazonaws.services.sns.AmazonSNS;
+import org.junit.Before;
+
+public abstract class AbstractSNSFakeTest {
+
+    protected AmazonSNS sns;
+
+    @Before
+    public void prepareFakeService() {
+        sns = new AmazonSNSFake("12345");
+    }
+}
