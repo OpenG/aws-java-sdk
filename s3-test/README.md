@@ -1,4 +1,4 @@
-# Amazon S3 (Simple Storage Service) Test Utils
+# Amazon S3 Test Utils
 
 A set of classes to help in writing tests when developing using Amazon S3.
 

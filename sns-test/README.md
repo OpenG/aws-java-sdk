@@ -1,4 +1,4 @@
-# Amazon SNS (Simple Notification Service) Test Utils
+# Amazon SNS Test Utils
 
 A set of classes to help in writing tests when developing using Amazon SNS.
 
