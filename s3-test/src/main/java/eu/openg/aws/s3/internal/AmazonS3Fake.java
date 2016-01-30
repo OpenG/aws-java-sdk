@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static eu.openg.aws.s3.internal.FakeExceptionBuilder.*;
+import static eu.openg.aws.s3.internal.S3ExceptionBuilder.*;
 
 public class AmazonS3Fake extends AbstractAmazonS3 {
 
@@ -118,8 +118,8 @@ public class AmazonS3Fake extends AbstractAmazonS3 {
         return getBucketsContainer(bucketName).putObject(buildS3Object(key, input, metadata));
     }
 
-    private S3Object buildS3Object(String key, InputStream input, ObjectMetadata metadata) {
-        S3Object object = new S3Object();
+    private static S3Object buildS3Object(String key, InputStream input, ObjectMetadata metadata) {
+        final S3Object object = new S3Object();
         object.setKey(key);
         object.setObjectContent(input);
         object.setObjectMetadata(metadata);

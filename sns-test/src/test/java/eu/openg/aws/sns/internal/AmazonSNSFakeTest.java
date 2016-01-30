@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-include 's3-sdk', 's3-test'
-include 'sns-sdk', 'sns-test'
+package eu.openg.aws.sns.internal;
+
+import com.amazonaws.services.sns.AmazonSNS;
+import org.junit.Test;
+
+import static org.assertj.core.api.StrictAssertions.assertThat;
+
+public class AmazonSNSFakeTest extends AbstractSNSFakeTest {
+
+    @Test
+    public void fakeHasAllAmazonSNSMethods() {
+        assertThat(new AmazonSNSFake("12345")).isInstanceOf(AmazonSNS.class);
+    }
+}
