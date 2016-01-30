@@ -1,4 +1,4 @@
-# Amazon S3 Test Utils
+# Amazon S3 (Simple Storage Service) Test Utils
 
 A set of classes to help in writing tests when developing using Amazon S3.
 
@@ -64,7 +64,7 @@ public class TestServiceTest {
 * Increase your security (fakes do not need to connect to Amazon S3 in order to run meaning you do not need to supply
   your CI server with AWS credentials in order to run your tests)
 
-### Notice
+#### Notice
 
 Buckets prefixed with keyword `existing` (i.e., `existing_bucket`) are considered already created.
  
@@ -104,4 +104,4 @@ public class AmazonExceptionTest {
 
 # License
 
-Amazon S3 Test Utils is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
+Amazon S3 Test Utils are licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
