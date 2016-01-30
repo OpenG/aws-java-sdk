@@ -26,7 +26,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.InputStream;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 

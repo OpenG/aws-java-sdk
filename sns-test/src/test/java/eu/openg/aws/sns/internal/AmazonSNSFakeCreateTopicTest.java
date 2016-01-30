@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static com.amazonaws.AmazonServiceException.ErrorType.Client;
 import static org.assertj.core.api.AWSThrowableAssert.assertThatThrownBy;
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AmazonSNSFakeCreateTopicTest extends AbstractSNSFakeTest {
 

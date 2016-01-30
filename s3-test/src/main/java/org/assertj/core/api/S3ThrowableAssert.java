@@ -20,7 +20,7 @@ import com.amazonaws.AmazonServiceException.ErrorType;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
-import static org.assertj.core.api.StrictAssertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class S3ThrowableAssert extends AbstractThrowableAssert<S3ThrowableAssert, AmazonS3Exception> {
 
