@@ -1,29 +1,27 @@
 # Amazon S3 SDK for Java 8
 
-Amazon S3 (Simple Storage Service) SDK (Software Development Kit) for Java 8.
+Amazon SNS (Simple Notification Service) SDK (Software Development Kit) for Java 8.
 
 # SDK
 
-## S3Service
+## SNSService
 
-Provides an interface for accessing the Amazon S3 web service.
+Provides an interface for accessing the Amazon SNS web service.
 
 ### Methods
 
-Name            | Description
-----------------|------------------------------------------------------------------------------------------
-doesBucketExist | Checks if the specified bucket exists
-listBuckets     | Returns a list of all Amazon S3 buckets that the authenticated sender of the request owns
-getBucket       | Returns interface object for the specified Bucket
-createBucket    | Creates a new Amazon S3 bucket with the specified name in the default (US) region
-deleteBucket    | Deletes the specified bucket
+Name        | Description
+------------|---------------------------------------------------------
+listTopics  | Returns a list of the requester's topics
+createTopic | Creates a topic to which notifications can be published
+publish     | Sends a message to all of a topic's subscribed endpoints
 
 ### Example
 
 ```java
-S3Service service = new S3Service();
-if (!service.doesBucketExist("bucket_name"))
-    service.createBucket("bucket_name");
+SNSService service = new SNSService();
+String topicArn = service.createTopic("topic_name").getTopicArn();
+service.publish(topicArn, "Hello World!");
 ```
 
 ## S3Bucket
@@ -50,8 +48,8 @@ if (bucket.isPresent())
 
 #### Notice
 
-If you want, you can also provide your own `AmazonS3` instance as a constructor parameter instead of allowing the
-service to create a new instance of `AmazonS3Client`.
+If you want, you can also provide your own `AmazonSNSClient` instance as a constructor parameter instead of allowing the
+service to create a new instance of `AmazonSNSClient`.
 
 # License
 
