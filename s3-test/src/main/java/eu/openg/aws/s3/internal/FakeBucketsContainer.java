@@ -67,6 +67,7 @@ class FakeBucketsContainer {
         PutObjectResult result = new PutObjectResult();
         result.setETag(object.getETag());
         result.setContentMd5(object.getMd5());
+        result.setMetadata(object.getMetadata());
         return result;
     }
 
