@@ -21,7 +21,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 
 import java.util.List;
-import java.util.Optional;
 
 public class S3Service {
 
