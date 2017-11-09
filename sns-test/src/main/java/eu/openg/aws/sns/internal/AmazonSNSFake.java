@@ -85,22 +85,22 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void deleteEndpoint(DeleteEndpointRequest deleteEndpointRequest) throws AmazonClientException {
+    public DeleteEndpointResult deleteEndpoint(DeleteEndpointRequest deleteEndpointRequest) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void setTopicAttributes(SetTopicAttributesRequest setTopicAttributesRequest) throws AmazonClientException {
+    public SetTopicAttributesResult setTopicAttributes(SetTopicAttributesRequest setTopicAttributesRequest) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void deleteTopic(DeleteTopicRequest deleteTopicRequest) throws AmazonClientException {
+    public DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void removePermission(RemovePermissionRequest removePermissionRequest) throws AmazonClientException {
+    public RemovePermissionResult removePermission(RemovePermissionRequest removePermissionRequest) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -119,19 +119,29 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
+    public GetSMSAttributesResult getSMSAttributes(GetSMSAttributesRequest getSMSAttributesRequest) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
     public ListSubscriptionsResult listSubscriptions(ListSubscriptionsRequest listSubscriptionsRequest) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void setSubscriptionAttributes(SetSubscriptionAttributesRequest setSubscriptionAttributesRequest) {
+    public SetSubscriptionAttributesResult setSubscriptionAttributes(SetSubscriptionAttributesRequest setSubscriptionAttributesRequest) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void setPlatformApplicationAttributes(
+    public SetPlatformApplicationAttributesResult setPlatformApplicationAttributes(
             SetPlatformApplicationAttributesRequest setPlatformApplicationAttributesRequest
     ) throws AmazonClientException {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public SetSMSAttributesResult setSMSAttributes(SetSMSAttributesRequest setSMSAttributesRequest) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -143,7 +153,7 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void addPermission(AddPermissionRequest addPermissionRequest) throws AmazonClientException {
+    public AddPermissionResult addPermission(AddPermissionRequest addPermissionRequest) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -172,7 +182,12 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void deletePlatformApplication(DeletePlatformApplicationRequest deletePlatformApplicationRequest) {
+    public ListPhoneNumbersOptedOutResult listPhoneNumbersOptedOut(ListPhoneNumbersOptedOutRequest listPhoneNumbersOptedOutRequest) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public DeletePlatformApplicationResult deletePlatformApplication(DeletePlatformApplicationRequest deletePlatformApplicationRequest) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -184,12 +199,12 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void setEndpointAttributes(SetEndpointAttributesRequest setEndpointAttributesRequest) {
+    public SetEndpointAttributesResult setEndpointAttributes(SetEndpointAttributesRequest setEndpointAttributesRequest) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void unsubscribe(UnsubscribeRequest unsubscribeRequest) throws AmazonClientException {
+    public UnsubscribeResult unsubscribe(UnsubscribeRequest unsubscribeRequest) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -218,6 +233,11 @@ public class AmazonSNSFake implements AmazonSNS {
     @Override
     public ListTopicsResult listTopics(String nextToken) throws AmazonClientException {
         return listTopics(restoreNextToken(nextToken).getFrom());
+    }
+
+    @Override
+    public OptInPhoneNumberResult optInPhoneNumber(OptInPhoneNumberRequest optInPhoneNumberRequest) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     private ListTopicsResult listTopics(int skip) {
@@ -288,17 +308,17 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void setTopicAttributes(String topicArn, String attributeName, String attributeValue) {
+    public SetTopicAttributesResult setTopicAttributes(String topicArn, String attributeName, String attributeValue) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void deleteTopic(String topicArn) throws AmazonClientException {
+    public DeleteTopicResult deleteTopic(String topicArn) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void removePermission(String topicArn, String label) throws AmazonClientException {
+    public RemovePermissionResult removePermission(String topicArn, String label) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -308,12 +328,17 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void setSubscriptionAttributes(String subscriptionArn, String attributeName, String attributeValue) {
+    public SetSubscriptionAttributesResult setSubscriptionAttributes(String subscriptionArn, String attributeName, String attributeValue) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
     @Override
-    public void addPermission(String topicArn, String label, List<String> aWSAccountIds, List<String> actionNames) {
+    public AddPermissionResult addPermission(String topicArn, String label, List<String> aWSAccountIds, List<String> actionNames) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public CheckIfPhoneNumberIsOptedOutResult checkIfPhoneNumberIsOptedOut(CheckIfPhoneNumberIsOptedOutRequest checkIfPhoneNumberIsOptedOutRequest) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
@@ -338,7 +363,7 @@ public class AmazonSNSFake implements AmazonSNS {
     }
 
     @Override
-    public void unsubscribe(String subscriptionArn) throws AmazonClientException {
+    public UnsubscribeResult unsubscribe(String subscriptionArn) throws AmazonClientException {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED);
     }
 
